@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Cost of the Calendar — Football's Injury Crisis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/scrollama"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <style>
+    /* ── Intensity Scrollytelling ───────────────────────── */
+    .scrolly--intensity {
+      position: relative;
+      display: flex;
+      gap: 0;
+      margin-bottom: 30vh; 
+    }
+
+    .scrolly--intensity .sticky-visual--intensity {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 52%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+
+      justify-content: center;              /* 👈 restore centering */
+      align-items: flex-start;
+
+      transform: translateY(-0.2vh);          /* 👈 shift everything up ~5% */
+
+      padding: 1.5rem 3rem 3rem 4rem;            /* 👈 remove top padding */
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    /* The intro text block shown before stats */
+    .intensity-intro-block {
+      margin-bottom: 3.5vh;;
+    }
+    .intensity-intro-block .factor-card__number {
+      display: block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      opacity: 0.45;
+      margin-bottom: 0.5rem;
+    }
+    .intensity-intro-block h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+      font-weight: 700;
+      margin: 0 0 1rem;
+      line-height: 1.2;
+    }
+    .intensity-intro-block p {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      opacity: 0.8;
+      margin: 0 0 0.6rem;
+    }
+
+    /* Bar chart container */
+    .intensity-chart {
+      width: 100%;
+      margin-top: -2vh;
+    }
+    .intensity-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.45;
+      margin-bottom: 1.2rem;
+    }
+
+    /* Individual stat bar rows */
+    .intensity-bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .intensity-bar-row.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .intensity-bar-row__label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      opacity: 0.7;
+      letter-spacing: 0.02em;
+    }
+    .intensity-bar-row__track {
+      position: relative;
+      height: 36px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .intensity-bar-row__fill {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      width: 0%;
+      border-radius: 4px;
+      transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .intensity-bar-row__fill--sprints-dist  { background: #e05c3a; }
+    .intensity-bar-row__fill--sprints-week  { background: #d4444e; }
+    .intensity-bar-row__fill--hsr           { background: #c4398a; }
+    .intensity-bar-row__fill--hid           { background: #9b35b5; }
+    .intensity-bar-row__fill--minutes       { background: #5b57d6; }
+
+    .intensity-bar-row__value {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.4s ease 0.7s;
+      color: #fff;
+    }
+    .intensity-bar-row.visible .intensity-bar-row__value {
+      opacity: 1;
+    }
+
+    /* Divider line between sprint stats and minutes stats */
+    .intensity-chart__divider {
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+      margin: 0.5rem 0 1.5rem;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .intensity-chart__divider.visible {
+      opacity: 1;
+    }
+    
+    .intensity-chart__divider-label.visible {
+      opacity: 0.4;
+    }
+
+    /* Steps on the RIGHT */
+    .scrolly--intensity .steps--intensity {
+      width: 48%;
+      padding: 0;
+    }
+    .scrolly--intensity .steps--intensity .step {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 2rem 3rem 2rem 2rem;
+      box-sizing: border-box;
+    }
+    .scrolly--intensity .steps--intensity .step:first-child {
+      min-height: 80vh;
+    }
+    .scrolly--intensity .steps--intensity .step:last-child {
+      min-height: 80vh;
+    }
+
+    /* Active stat highlight card */
+    .intensity-highlight {
+      margin-top: 2rem;
+      padding: 1.2rem 1.5rem;
+      border-left: 3px solid currentColor;
+      background: rgba(255,255,255,0.04);
+      border-radius: 0 6px 6px 0;
+      opacity: 0;
+      transform: translateX(8px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .intensity-highlight.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .intensity-highlight__number {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .intensity-highlight__label {
+      font-size: 0.82rem;
+      opacity: 0.6;
+      line-height: 1.4;
+    }
+
+    /* Color per stat */
+    .intensity-highlight--0 { color: #e05c3a; border-color: #e05c3a; }
+    .intensity-highlight--1 { color: #d4444e; border-color: #d4444e; }
+    .intensity-highlight--2 { color: #c4398a; border-color: #c4398a; }
+    .intensity-highlight--3 { color: #9b35b5; border-color: #9b35b5; }
+    .intensity-highlight--4 { color: #5b57d6; border-color: #5b57d6; }
+
+    @media (max-width: 700px) {
+      .scrolly--intensity {
+        flex-direction: column;
+      }
+      .scrolly--intensity .sticky-visual--intensity {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 2rem 1.5rem 1rem;
+      }
+      .scrolly--intensity .steps--intensity {
+        width: 100%;
+      }
+      .scrolly--intensity .steps--intensity .step {
+        padding: 2rem 1.5rem;
+        min-height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =============================================
+       HERO
+  ============================================= -->
+  <section class="hero">
+    <div class="hero__bg-rule"></div>
+    <div class="hero__content">
+      <div class="hero__eyebrow">A Digital Investigation · May 2026</div>
+      <h1 class="hero__headline">
+        <em>The Cost</em><br>of the Calendar
+      </h1>
+      <p class="hero__deck">
+        Prominent footballers have become increasingly vocal about the physical toll 
+        of a relentless fixture schedule. But are they right — and if injuries are rising, 
+        is congestion truly to blame?
+      </p>
+      <div class="hero__byline">By William McNamee &amp; Megan Moreland</div>
+    </div>
+    <div class="hero__scroll-hint" aria-hidden="true">
+      <svg width="20" height="32" viewBox="0 0 20 32"><rect x="1" y="1" width="18" height="30" rx="9" stroke="currentColor" stroke-width="1.5" fill="none"/><circle class="hero__scroll-dot" cx="10" cy="10" r="3" fill="currentColor"/></svg>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- =============================================
+       INTRO PROSE
+  ============================================= -->
+  <section class="prose-section">
+    <div class="prose-section__inner">
+      <p class="prose-section__lead">
+        Over the last few years, prominent figures within football have become increasingly vocal 
+        in their complaints over the fixture schedule becoming more congested — and its effect
+        on players' fitness and long-term health.
+      </p>
+    </div>
+  </section>
+
+  <!-- =============================================
+       EVIDENCE — stacked fade-in headlines
+  ============================================= -->
+  <section class="evidence-section">
+    <div class="evidence-section__sticky" id="headlineStickyArea">
+      <div class="headline-stack" id="headlineStack">
+        <div class="headline-card" id="hcard0">
+          <div class="headline-card__inner">
+            <img src="Images/BBC_slant.png" alt="BBC Sport headline about footballer injuries">
+            <cite>BBC Sport</cite>
+          </div>
+        </div>
+        <div class="headline-card" id="hcard1">
+          <div class="headline-card__inner">
+            <img src="Images/Fanatik_slant2.png" alt="Fanatik headline about fixture congestion">
+            <cite>Fanatik</cite>
+          </div>
+        </div>
+        <div class="headline-card" id="hcard2">
+          <div class="headline-card__inner">
+            <img src="Images/Reuters_slant2.png" alt="Reuters headline about football injuries">
+            <cite>Reuters</cite>
+          </div>
+        </div>
+        <div class="headline-card" id="hcard3">
+          <div class="headline-card__inner">
+            <img src="Images/The_Athletic_slant2.png" alt="The Athletic headline about player workload">
+            <cite>The Athletic</cite>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="evidence-section__steps" id="headlineSteps">
+      <div class="headline-step" data-headline="0"></div>
+      <div class="headline-step" data-headline="1"></div>
+      <div class="headline-step" data-headline="2"></div>
+      <div class="headline-step" data-headline="3"></div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       PIVOT QUESTION
+  ============================================= -->
+  <section class="pivot-section">
+    <div class="pivot-section__inner">
+      <p class="pivot-section__question">But are these claims valid?</p>
+      <p class="pivot-section__sub">
+        Are players getting injured more often? Is the severity of injuries getting worse? 
+        And if so — is fixture congestion really the cause?
+      </p>
+    </div>
+  </section>
+
+  <!-- =============================================
+       SCROLLYTELLING — Stadium / Injuries
+  ============================================= -->
+  <section class="scrolly scrolly--stadium" id="stadiumScrolly">
+
+    <div class="sticky-visual" id="stadiumStickyVisual">
+      <img
+        id="intro-image"
+        src="Images/stadium.png"
+        alt="Illustrated stadium overview"
+        class="stadium-intro-img"
+      />
+      <div id="stadium" role="img" aria-label="Tiered stadium visualisation showing injury absences by category"></div>
+      <div class="season-label" id="seasonLabel" aria-live="polite"></div>
+      <div class="injury-legend" id="injuryLegend" aria-label="Injury type colour legend">
+        <div class="injury-legend__item" data-type="muscle">
+          <span class="injury-legend__dot"></span><span>Muscle</span>
+        </div>
+        <div class="injury-legend__item" data-type="joint">
+          <span class="injury-legend__dot"></span><span>Joint &amp; Cartilage</span>
+        </div>
+        <div class="injury-legend__item" data-type="ligament">
+          <span class="injury-legend__dot"></span><span>Ligament</span>
+        </div>
+        <div class="injury-legend__item" data-type="tendon">
+          <span class="injury-legend__dot"></span><span>Tendon</span>
+        </div>
+        <div class="injury-legend__scale">
+          <span class="injury-legend__dot injury-legend__dot--empty"></span>
+          <span>= 50 injury days</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps" id="stadiumSteps">
+
+      <div class="step" data-step="intro">
+        <div class="step__card">
+          <span class="step__label">The Stage</span>
+          <p>This stadium will represent the scale of injury absences across Europe's top five leagues — measured not just in matches missed, but in days lost.</p>
+          <p class="step__small">Premier League · Bundesliga · La Liga · Serie A · Ligue 1</p>
+        </div>
+      </div>
+
+      <div class="step" data-step="empty">
+        <div class="step__card">
+          <span class="step__label">Four Stands</span>
+          <p>Our stadium is divided into <strong>four stands</strong> — one for each type of soft-tissue injury. Each seat represents <strong>50 injury days</strong>.</p>
+          <p>For now, the stands are empty.</p>
+        </div>
+      </div>
+
+      <div class="step" data-step="label-tiers">
+        <div class="step__card">
+          <span class="step__label">The Categories</span>
+          <p>From top to bottom: <strong style="color:var(--color-muscle)">Muscle</strong>, <strong style="color:var(--color-joint)">Joint &amp; Cartilage</strong>, <strong style="color:var(--color-ligament)">Ligament</strong>, and <strong style="color:var(--color-tendon)">Tendon</strong> injuries.</p>
+          <p>Together they account for <strong>84%</strong> of all absences.</p>
+        </div>
+      </div>
+
+      <div class="step" data-step="fill-muscle"
+           data-muscle="7352" data-joint="0" data-ligament="0" data-tendon="0"
+           data-season="2024/25">
+        <div class="step__card">
+          <span class="step__label">Muscle Injuries — 2024/25</span>
+          <div class="step__stat">
+            <span class="step__stat-number">7,352</span>
+            <span class="step__stat-label">days lost to muscle injuries</span>
+          </div>
+          <p>Muscle strains and tears dominate — the single largest category by a wide margin. Each seat represents <strong>50 injury days</strong>.</p>
+        </div>
+      </div>
+
+      <div class="step" data-step="fill-joint"
+           data-muscle="7352" data-joint="3760" data-ligament="0" data-tendon="0"
+           data-season="2024/25">
+        <div class="step__card">
+          <span class="step__label">Joint &amp; Cartilage — 2024/25</span>
+          <div class="step__stat">
+            <span class="step__stat-number">3,760</span>
+            <span class="step__stat-label">days lost to joint &amp; cartilage injuries</span>
+          </div>
+          <p>Knee and ankle problems add another <strong>75 seats</strong> — heavily linked to high-intensity sprinting loads.</p>
+        </div>
+      </div>
+
+      <div class="step" data-step="fill-ligament"
+           data-muscle="7352" data-joint="3760" data-ligament="2719" data-tendon="0"
+           data-season="2024/25">
+        <div class="step__card">
+          <span class="step__label">Ligament — 2024/25</span>
+          <div class="step__stat">
+            <span class="step__stat-number">2,719</span>
+            <span class="step__stat-label">days lost to ligament injuries</span>
+          </div>
+          <p>Ligament sprains and ACL ruptures add <strong>54 seats</strong> — these are the long-duration injuries that define a player's season.</p>
+        </div>
+      </div>
+
+      <div class="step" data-step="fill-all"
+           data-muscle="7352" data-joint="3760" data-ligament="2719" data-tendon="728"
+           data-season="2024/25">
+        <div class="step__card">
+          <span class="step__label">Complete Picture — 2024/25</span>
+          <div class="step__stat">
+            <span class="step__stat-number">14,559</span>
+            <span class="step__stat-label">total soft-tissue days lost</span>
+          </div>
+          <p>Add tendon injuries and the picture is complete — the highest figure in five seasons, with each seat representing <strong>50 days</strong> lost.</p>
+        </div>
+      </div>
+
+      <div class="step" data-step="season"
+           data-muscle="6494" data-joint="4168" data-ligament="2744" data-tendon="449"
+           data-season="2023/24">
+        <div class="step__card">
+          <span class="step__label">Breakdown — 2023/24</span>
+          <ul class="injury-list">
+            <li class="injury-text" data-type="muscle">
+              <span class="injury-list__type">Muscle</span>
+              <span class="injury-list__count">6,494</span>
+            </li>
+            <li class="injury-text" data-type="joint">
+              <span class="injury-list__type">Joint &amp; Cartilage</span>
+              <span class="injury-list__count">4,168</span>
+            </li>
+            <li class="injury-text" data-type="ligament">
+              <span class="injury-list__type">Ligament</span>
+              <span class="injury-list__count">2,744</span>
+            </li>
+            <li class="injury-text" data-type="tendon">
+              <span class="injury-list__type">Tendon</span>
+              <span class="injury-list__count">449</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step" data-step="season"
+           data-muscle="5930" data-joint="3339" data-ligament="2423" data-tendon="672"
+           data-season="2022/23">
+        <div class="step__card">
+          <span class="step__label">Breakdown — 2022/23</span>
+          <ul class="injury-list">
+            <li class="injury-text" data-type="muscle">
+              <span class="injury-list__type">Muscle</span>
+              <span class="injury-list__count">5,930</span>
+            </li>
+            <li class="injury-text" data-type="joint">
+              <span class="injury-list__type">Joint &amp; Cartilage</span>
+              <span class="injury-list__count">3,339</span>
+            </li>
+            <li class="injury-text" data-type="ligament">
+              <span class="injury-list__type">Ligament</span>
+              <span class="injury-list__count">2,423</span>
+            </li>
+            <li class="injury-text" data-type="tendon">
+              <span class="injury-list__type">Tendon</span>
+              <span class="injury-list__count">672</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step" data-step="season"
+           data-muscle="6145" data-joint="3592" data-ligament="2303" data-tendon="429"
+           data-season="2021/22">
+        <div class="step__card">
+          <span class="step__label">Breakdown — 2021/22</span>
+          <ul class="injury-list">
+            <li class="injury-text" data-type="muscle">
+              <span class="injury-list__type">Muscle</span>
+              <span class="injury-list__count">6,145</span>
+            </li>
+            <li class="injury-text" data-type="joint">
+              <span class="injury-list__type">Joint &amp; Cartilage</span>
+              <span class="injury-list__count">3,592</span>
+            </li>
+            <li class="injury-text" data-type="ligament">
+              <span class="injury-list__type">Ligament</span>
+              <span class="injury-list__count">2,303</span>
+            </li>
+            <li class="injury-text" data-type="tendon">
+              <span class="injury-list__type">Tendon</span>
+              <span class="injury-list__count">429</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step" data-step="season"
+           data-muscle="6023" data-joint="3403" data-ligament="2432" data-tendon="383"
+           data-season="2020/21">
+        <div class="step__card">
+          <span class="step__label">Breakdown — 2020/21</span>
+          <ul class="injury-list">
+            <li class="injury-text" data-type="muscle">
+              <span class="injury-list__type">Muscle</span>
+              <span class="injury-list__count">6,023</span>
+            </li>
+            <li class="injury-text" data-type="joint">
+              <span class="injury-list__type">Joint &amp; Cartilage</span>
+              <span class="injury-list__count">3,403</span>
+            </li>
+            <li class="injury-text" data-type="ligament">
+              <span class="injury-list__type">Ligament</span>
+              <span class="injury-list__count">2,432</span>
+            </li>
+            <li class="injury-text" data-type="tendon">
+              <span class="injury-list__type">Tendon</span>
+              <span class="injury-list__count">383</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =============================================
+       BRIDGE
+  ============================================= -->
+  <section class="pivot-section pivot-section--dark">
+    <div class="pivot-section__inner">
+      <p class="pivot-section__question">
+        So injuries are rising. But is the fixture schedule really more congested?
+      </p>
+    </div>
+  </section>
+
+  <!-- =============================================
+       SCROLLYTELLING — Congestion / Charts
+  ============================================= -->
+  <section class="scrolly scrolly--congestion congestion-scrolly" id="congestionScrolly">
+    <div class="sticky-visual sticky-visual--charts">
+      <div class="chart-wrapper">
+        <div class="chart-card-bg" aria-hidden="true"></div>
+        <iframe id="chart1"
+          title="Total matches played across top five leagues"
+          src="https://datawrapper.dwcdn.net/7wKRP/7/"
+          scrolling="no"
+          frameborder="0"
+          loading="lazy">
+        </iframe>
+        <iframe id="chart2"
+          title="Premier League fixture congestion over time"
+          src="https://datawrapper.dwcdn.net/3mbUe/3/"
+          scrolling="no"
+          frameborder="0"
+          loading="lazy">
+        </iframe>
+        <iframe id="chart3"
+          title="Why are injuries rising if fixtures are not?"
+          src="https://datawrapper.dwcdn.net/UvoqV/1/"
+          scrolling="no"
+          frameborder="0"
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+    
+    <div class="steps">
+      <div class="step" data-chart="1">
+        <div class="step__card">
+          <span class="step__label">Total Matches</span>
+          <p>The number of matches played across the top five leagues <strong>isn't actually increasing</strong>. The schedule, by raw count, hasn't grown.</p>
+          <p>These figures include <strong>all</strong> domestic league, cup and European competitions</p>
+        </div>
+      </div>
+      <div class="step" data-chart="2">
+        <div class="step__card">
+          <span class="step__label">Fixture Congestion</span>
+          <p>Premier League clubs also aren't seeing a meaningful rise in fixture congestion.</p>
+          <p>These figures include matches played in the Premier League, FA Cup, League Cup and European Competitions.</p>
+        </div>
+      </div>
+      <div class="step" data-chart="3">
+        <div class="step__card">
+          <span class="step__label">The Real Question</span>
+          <p>If it's not more matches — or more congestion — then <strong>why are injuries rising?</strong></p>
+          <p>The answer may lie in how the game itself has changed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       ALTERNATIVE FACTORS — Intro header
+  ============================================= -->
+  <section class="factors-section">
+    <div class="factors-section__intro">
+      <span class="factors-section__eyebrow">Alternative Explanations</span>
+      <h2>If not the calendar — then what?</h2>
+    </div>
+
+    <!-- =============================================
+         FACTOR 01 — Match Intensity (scrollytelling)
+         Sticky bar chart on left, steps on right
+    ============================================= -->
+    <section class="scrolly scrolly--intensity" id="intensityScrolly" aria-label="Match Intensity statistics">
+
+      <!-- STICKY LEFT PANEL -->
+      <div class="sticky-visual--intensity" id="intensityStickyPanel">
+        <div class="intensity-intro-block">
+          <span class="factor-card__number">01</span>
+          <h3>Match Intensity</h3>
+          <p>Matches have become <strong>far more physically demanding</strong> in recent years.</p>
+          <p>Recent tactical shifts mean players cover more ground at higher speeds, and regulatory changes have extended how long games actually last.</p>
+        </div>
+
+        <div class="intensity-chart" id="intensityChart">
+          <div class="intensity-label">Increase over the past decade</div>
+
+          <!-- Bar rows — hidden initially, revealed by scroll -->
+          <div class="intensity-bar-row" id="ibar-0">
+            <div class="intensity-bar-row__label">Sprinting distance</div>
+            <div class="intensity-bar-row__track">
+              <div class="intensity-bar-row__fill intensity-bar-row__fill--sprints-dist" data-target="40"></div>
+              <span class="intensity-bar-row__value">+40%</span>
+            </div>
+          </div>
+
+          <div class="intensity-bar-row" id="ibar-1">
+            <div class="intensity-bar-row__label">Weekly sprints per player</div>
+            <div class="intensity-bar-row__track">
+              <div class="intensity-bar-row__fill intensity-bar-row__fill--sprints-week" data-target="50"></div>
+              <span class="intensity-bar-row__value">+50%</span>
+            </div>
+          </div>
+
+          <div class="intensity-bar-row" id="ibar-2">
+            <div class="intensity-bar-row__label">High-speed running</div>
+            <div class="intensity-bar-row__track">
+              <div class="intensity-bar-row__fill intensity-bar-row__fill--hsr" data-target="23"></div>
+              <span class="intensity-bar-row__value">+23%</span>
+            </div>
+          </div>
+
+          <div class="intensity-bar-row" id="ibar-3">
+            <div class="intensity-bar-row__label">High-intensity distance</div>
+            <div class="intensity-bar-row__track">
+              <div class="intensity-bar-row__fill intensity-bar-row__fill--hid" data-target="27"></div>
+              <span class="intensity-bar-row__value">+27%</span>
+            </div>
+          </div>
+
+          <div class="intensity-chart__divider" id="intensityDivider"></div>
+          <div class="intensity-label" id="intensityDividerLabel">Due to recent regulatory changes</div>
+
+          <div class="intensity-bar-row" id="ibar-4">
+            <div class="intensity-bar-row__label">Actual minutes played per match</div>
+            <div class="intensity-bar-row__track">
+              <div class="intensity-bar-row__fill intensity-bar-row__fill--minutes" data-target="13"></div>
+              <span class="intensity-bar-row__value">+13%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCROLLING STEPS (right column) -->
+      <div class="steps steps--intensity" id="intensitySteps">
+
+        <!-- Step 0: Intro — chart is empty -->
+        <div class="step" data-intensity-step="intro">
+          <div class="step__card">
+            <span class="step__label">The Intensity Problem</span>
+            <p>The number of matches hasn't changed. But what happens <em>inside</em> those matches has shifted dramatically.</p>
+            <p>Modern pressing systems and high defensive lines have made the game significantly more physically taxing — even over the same 90 minutes.</p>
+          </div>
+        </div>
+
+        <!-- Step 1: Sprinting distance -->
+        <div class="step" data-intensity-step="0">
+          <div class="step__card">
+            <span class="step__label">Running Further, Faster</span>
+            <div class="intensity-highlight intensity-highlight--0" id="ihighlight-0">
+              <span class="intensity-highlight__number">+40%</span>
+              <span class="intensity-highlight__label">increase in sprinting distance past decade</span> <br/>
+              <span class="intensity-highlight__label">(Sprints = any running at 7m/s or greater)</span>
+              
+            </div>
+            <br/>
+            <p>Players are covering significantly more ground at sprint speed in every match. High-press tactics mean even defenders and midfielders must repeatedly hit top speed.</p>
+          </div>
+        </div>
+
+        <!-- Step 2: Weekly sprints -->
+        <div class="step" data-intensity-step="1">
+          <div class="step__card">
+            <span class="step__label">Sprint Frequency</span>
+            <div class="intensity-highlight intensity-highlight--1" id="ihighlight-1">
+              <span class="intensity-highlight__number">+50%</span>
+              <span class="intensity-highlight__label">more weekly sprints per player</span>
+            </div>
+            <br/>
+            <p>It's not just distance — it's the <em>number of explosive efforts</em>. Each sprint is a muscular stress event, and players are performing half as many again each week compared to a decade ago.</p>
+          </div>
+        </div>
+
+        <!-- Step 3: HSR -->
+        <div class="step" data-intensity-step="2">
+          <div class="step__card">
+            <span class="step__label">High-Speed Running</span>
+            <div class="intensity-highlight intensity-highlight--2" id="ihighlight-2">
+              <span class="intensity-highlight__number">+23%</span>
+              <span class="intensity-highlight__label">increase in high-speed running distance</span>
+              <span class="intensity-highlight__label">(Running between 5.5 m/s - 7 m/s)</span>
+            </div>
+            <br/>
+            <p>High-speed running places a significant load on hamstrings and hip flexors, the muscles most prone to strain under fatigue.</p>
+          </div>
+        </div>
+
+        <!-- Step 4: High-intensity distance -->
+        <div class="step" data-intensity-step="3">
+          <div class="step__card">
+            <span class="step__label">Total High-Intensity Load</span>
+            <div class="intensity-highlight intensity-highlight--3" id="ihighlight-3">
+              <span class="intensity-highlight__number">+27%</span>
+              <span class="intensity-highlight__label">increase in high-intensity distance covered</span>
+              <span class="intensity-highlight__label">(Distance covered at 5.5m/s or more)</span>
+            </div>
+            <br/>
+            <p>Combining sprints and high-speed running, the total high-intensity load per player has risen by more than a quarter. Recovery windows between matches haven't lengthened to match.</p>
+          </div>
+        </div>
+
+        <!-- Step 5: Match minutes -->
+        <div class="step" data-intensity-step="4">
+          <div class="step__card">
+            <span class="step__label">Longer Games Too</span>
+            <div class="intensity-highlight intensity-highlight--4" id="ihighlight-4">
+              <span class="intensity-highlight__number">+13%</span>
+              <span class="intensity-highlight__label">increase in actual minutes played per match</span>
+            </div>
+            <br/>
+            <p>New stoppage-time rules introduced by IFAB mean matches are lasting around five minutes longer each.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <!-- /Factor 01 -->
+
+    <!-- Factor 02 — Travel (unchanged) -->
+    <div class="factor-card factor-card--travel">
+      <div class="factor-card__inner">
+        <div class="factor-card__text">
+          <span class="factor-card__number">02</span>
+          <h3>Travel</h3>
+          <ul class="factor-list">
+            <li>Evolving continental competitions are forcing players to travel <strong>further between matches</strong>.</li>
+            <li>More time zones crossed means more jetlag — and <strong>worse sleep quality</strong> before and after fixtures.</li>
+            <li>Recovery days are spent in <strong>planes, coaches and trains</strong> rather than club training facilities.</li>
+            <li>The <strong>compounding effect</strong> of fatigue-on-fatigue accelerates the risk of soft-tissue breakdown.</li>
+          </ul>
+        </div>
+        <div class="factor-card__callout">
+          <span class="factor-card__big-number">↑31%</span>
+          <span class="factor-card__big-label">Avg. km travelled per<br>international window</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =============================================
+       METHODOLOGY / LEARN MORE
+  ============================================= -->
+  <section class="methodology-section">
+    <div class="methodology-section__inner">
+      <p class="methodology-section__note">
+        Injury data sourced from the CIES Football Observatory and Transfermarkt, covering five seasons 
+        (2020/21–2024/25) across the Premier League, Bundesliga, La Liga, Serie A, and Ligue 1.
+      </p>
+      <button class="learn-more-btn" id="learnMoreBtn" aria-expanded="false" aria-controls="methodologyPanel">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" class="learn-more-btn__icon learn-more-btn__icon--plus"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" class="learn-more-btn__icon learn-more-btn__icon--minus" hidden><path d="M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        How was this data collected?
+      </button>
+      <div class="methodology-panel" id="methodologyPanel" hidden>
+        <div class="methodology-panel__inner">
+          <h3>Data &amp; Methodology</h3>
+          <p>Injury absence figures were compiled from Transfermarkt's publicly available injury history data, 
+          cross-referenced with match-by-match squad sheets for all clubs in the top five European leagues.</p>
+          <p>Soft-tissue injury categorisation follows the UEFA injury study taxonomy: muscle injuries (strains 
+          and tears), joint &amp; cartilage injuries (including knee and ankle problems), ligament injuries 
+          (sprains and ruptures), and tendon injuries (tendinopathies and ruptures).</p>
+          <p>Fixture congestion was computed from each club's official published schedule. A "congested" 
+          period is defined as three or more matches within a seven-day window.</p>
+          <p>Match intensity data (distance covered, sprints, high-intensity runs) was sourced from 
+          publicly available Opta and StatsBomb aggregates published by the leagues.</p>
+          <p>Travel distance estimates use great-circle calculations between stadium coordinates, 
+          aggregated at season level per squad.</p>
+          <p>Dot scale: each seat in the stadium visualisation represents 10 injury days. Dot counts 
+          are rounded to the nearest 10 for visual clarity; total displayed may differ slightly from 
+          exact figures quoted in text.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       FOOTER
+  ============================================= -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <p>© 2025 William McNamee &amp; Megan Moreland</p>
+      <p>Data: Transfermarkt · CIES Football Observatory · Opta · StatsBomb</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+
+  <script>
+  // ── Match Intensity Scrollytelling ──────────────────────
+  (function () {
+
+    // Data config per step index (matches data-intensity-step values)
+    const STEPS = [
+      { bars: [],           divider: false },  // intro — no bars
+      { bars: [0],          divider: false },  // +40% sprint dist
+      { bars: [0, 1],       divider: false },  // +50% weekly sprints
+      { bars: [0, 1, 2],    divider: false },  // +23% HSR
+      { bars: [0, 1, 2, 3], divider: false },  // +27% HID
+      { bars: [0, 1, 2, 3, 4], divider: true } // +13% minutes (with divider)
+    ];
+
+    function getStepIndex(el) {
+      const v = el.dataset.intensityStep;
+      if (v === 'intro') return 0;
+      return parseInt(v, 10) + 1;
+    }
+
+    function applyStep(stepIndex) {
+      const cfg = STEPS[Math.min(stepIndex, STEPS.length - 1)];
+
+      // Show/hide bars
+      for (let i = 0; i < 5; i++) {
+        const row = document.getElementById('ibar-' + i);
+        if (!row) continue;
+        const shouldShow = cfg.bars.includes(i);
+        if (shouldShow && !row.classList.contains('visible')) {
+          row.classList.add('visible');
+          // Animate the fill bar
+          const fill = row.querySelector('.intensity-bar-row__fill');
+          if (fill) {
+            const target = parseFloat(fill.dataset.target);
+            // Use 80% of track width as the max (so 50% stat = 80% bar, etc.)
+            // We map 0–55% range of stat values to 10–92% bar width
+            const minStat = 0, maxStat = 55;
+            const minBar = 8, maxBar = 92;
+            const pct = minBar + ((target - minStat) / (maxStat - minStat)) * (maxBar - minBar);
+            requestAnimationFrame(() => {
+              fill.style.width = pct + '%';
+            });
+          }
+        } else if (!shouldShow) {
+          row.classList.remove('visible');
+          const fill = row.querySelector('.intensity-bar-row__fill');
+          if (fill) fill.style.width = '0%';
+        }
+      }
+
+      // Show/hide divider
+      const divider = document.getElementById('intensityDivider');
+      const dividerLabel = document.getElementById('intensityDividerLabel');
+      if (divider) divider.classList.toggle('visible', cfg.divider);
+      if (dividerLabel) dividerLabel.classList.toggle('visible', cfg.divider);
+
+      // Activate highlight card in active step
+      document.querySelectorAll('.intensity-highlight').forEach((el, i) => {
+        el.classList.toggle('active', cfg.bars.includes(i) && i === cfg.bars[cfg.bars.length - 1]);
+      });
+    }
+
+    // Init scrollama for the intensity section
+    function initIntensityScrolly() {
+      const scroller = scrollama();
+      scroller
+        .setup({
+          step: '#intensitySteps .step',
+          offset: 0.55,
+          debug: false
+        })
+        .onStepEnter(({ element }) => {
+          const idx = getStepIndex(element);
+          applyStep(idx);
+        })
+        .onStepExit(({ element, direction }) => {
+          if (direction === 'up') {
+            const idx = Math.max(0, getStepIndex(element) - 1);
+            applyStep(idx);
+          }
+        });
+
+      window.addEventListener('resize', scroller.resize);
+    }
+
+    // Wait for scrollama to be available
+    if (typeof scrollama !== 'undefined') {
+      initIntensityScrolly();
+    } else {
+      window.addEventListener('load', initIntensityScrolly);
+    }
+  })();
+  </script>
+
+</body>
+</html>
