@@ -1,0 +1,1392 @@
+@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap');
+
+
+/* =============================================
+   DESIGN TOKENS & RESET
+   ============================================= */
+:root {
+  /* Palette */
+  --color-bg:         #fffbe8;
+  --color-surface:    #fffbe8;
+  --color-surface-2:  #fffbe8;
+  --color-border:     rgba(255,255,255,0.07);
+  --color-text:       #000000;
+  --color-text-muted: #000000;
+  --color-accent:     #078a16ca;
+  --color-rule:       rgba(255, 255, 255, 0.1);
+
+  /* Injury colours — vivid, high-contrast */
+  --color-muscle:    #ff6b6b;
+  --color-joint:     #63b3ed;
+  --color-ligament:  #48cfad;
+  --color-tendon:    #ffd166;
+
+  /* Seat states */
+  --color-seat-empty: rgba(255,255,255,0.07);
+
+  /* Typography */
+  --font-display: 'Fjalla One', sans-serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'Courier New', monospace;
+
+  /* Spacing */
+  --space-xs:  0.5rem;
+  --space-sm:  1rem;
+  --space-md:  2rem;
+  --space-lg:  4rem;
+  --space-xl:  8rem;
+
+  /* Layout */
+  --max-prose: 680px;
+  --step-width: 42%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: clamp(16px, 1.1vw, 18px);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =============================================
+   HERO
+   ============================================= */
+.hero {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--space-lg) clamp(1.5rem, 6vw, 6rem) var(--space-xl);
+  position: relative;
+  overflow: hidden;
+  background-color: #fffbe8;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 52px 52px;
+  pointer-events: none;
+}
+
+.hero__bg-rule {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--color-accent);
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+}
+
+.hero__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-md);
+}
+
+.hero__headline {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 7.5rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-md);
+}
+
+.hero__headline em {
+  font-style: italic;
+  color: var(--color-accent);
+}
+
+.hero__deck {
+  max-width: 560px;
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  font-weight: 300;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin-bottom: var(--space-md);
+}
+
+.hero__byline {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.hero__scroll-hint {
+  position: absolute;
+  bottom: var(--space-md);
+  right: clamp(1.5rem, 6vw, 6rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.hero__scroll-dot {
+  animation: scrollDot 1.8s ease-in-out infinite;
+  transform-origin: center 10px;
+}
+
+@keyframes scrollDot {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  60%       { transform: translateY(12px); opacity: 0.2; }
+}
+
+/* =============================================
+   PROSE SECTION
+   ============================================= */
+.prose-section {
+  padding: var(--space-xl) clamp(1.5rem, 8vw, 8rem);
+  border-top: 1px solid var(--color-border);
+}
+
+.prose-section__inner { max-width: var(--max-prose); }
+
+.prose-section__lead {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+/* =============================================
+   EVIDENCE SECTION
+   ============================================= */
+.evidence-section {
+  position: relative;
+  min-height: 500vh;
+}
+
+.evidence-section__sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.evidence-section__steps {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.headline-step {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.headline-step:first-child {
+  margin-top: 50vh;
+}
+
+.headline-stack {
+  position: relative;
+  width: min(640px, 90vw);
+  height: clamp(220px, 35vh, 360px);
+}
+
+.headline-card {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+  z-index: 1;
+}
+
+#hcard0 { z-index: 1; }
+#hcard1 { z-index: 2; }
+#hcard2 { z-index: 3; }
+#hcard3 { z-index: 4; }
+
+.headline-card.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.headline-card__inner {
+  position: relative;
+  text-align: center;
+  width: 100%;
+}
+
+.headline-card img {
+  max-width: 100%;
+  height: auto;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  display: block;
+  margin: 0 auto;
+}
+
+.headline-card cite {
+  display: block;
+  margin-top: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-style: normal;
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  transition: opacity 0.4s ease;
+}
+
+.headline-card.superseded cite { opacity: 0; }
+
+/* =============================================
+   PIVOT / BRIDGE
+   ============================================= */
+.pivot-section {
+  padding: var(--space-xl) clamp(1.5rem, 8vw, 8rem);
+  border-top: 1px solid var(--color-border);
+}
+
+.pivot-section--dark { background: var(--color-surface); }
+
+.pivot-section__inner { max-width: var(--max-prose); }
+
+.pivot-section__question {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.25;
+  margin-bottom: var(--space-md);
+}
+
+.pivot-section__sub {
+  font-size: clamp(1rem, 1.3vw, 1.1rem);
+  color: var(--color-text-muted);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+/* =============================================
+   SCROLLY LAYOUT (shared)
+   ============================================= */
+.scrolly {
+  display: flex;
+  width: 100%;
+  position: relative;
+  border-top: 1px solid var(--color-border);
+}
+
+.steps {
+  width: var(--step-width);
+  padding: 0 clamp(1.5rem, 4vw, 4rem);
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.step {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-lg) 0;
+}
+
+.step__card {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 2px;
+  padding: var(--space-md);
+  backdrop-filter: blur(10px);
+  max-width: 400px;
+  /* Soft elevation */
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.step__label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 0.75rem;
+}
+
+.step__card p {
+  font-size: 1rem;
+  line-height: 1.65;
+  margin-bottom: 0.75rem;
+}
+
+.step__card p:last-child { margin-bottom: 0; }
+.step__card strong { color: #fff; }
+
+.step__small {
+  font-size: 0.8rem !important;
+  color: var(--color-text-muted);
+}
+
+.step__stat { margin: 0.75rem 0; }
+
+.step__stat-number {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  line-height: 1;
+  color: var(--color-accent);
+}
+
+.step__stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+.injury-list {
+  list-style: none;
+  margin-top: 0.5rem;
+}
+
+.injury-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  transition: color 0.35s ease;
+}
+
+.injury-list li:last-child { border-bottom: none; }
+.injury-list__type { font-weight: 500; }
+.injury-list__count {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+/* =============================================
+   STICKY VISUAL (shared)
+   ============================================= */
+.sticky-visual {
+  position: sticky;
+  top: 0;
+  flex: 1;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* =============================================
+   STADIUM SCROLLY — Atmosphere
+   ============================================= */
+.scrolly--stadium .sticky-visual {
+  background: radial-gradient(
+    ellipse at 50% 65%,
+    #fffdf2 0%,
+    #fffbe8 65%
+  );
+}
+
+/* D3 SVG fills container */
+#stadium svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  background: #fffbe8 !important;  /* ← add here, globally */
+}
+
+
+/* ---- Stadium Container ---- */
+#stadium {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  /* Taller aspect ratio for tiered layout */
+  aspect-ratio: 4 / 3;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#stadium.active { opacity: 1; }
+
+/* D3 SVG fills container */
+#stadium svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+
+/* ---- Season label ---- */
+.season-label {
+  position: absolute;
+  top: clamp(0.75rem, 2vw, 1.25rem);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+    background: #fffbe8;
+  border: 1px solid rgba(200,240,92,0.2);
+  border-radius: 2px;
+  padding: 0.3rem 0.85rem;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  white-space: nowrap;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+
+.season-label.active { opacity: 1; }
+
+/* ---- Tier labels (injected by JS) ---- */
+.tier-label-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* =============================================
+   INJURY LEGEND
+   ============================================= */
+.injury-legend {
+  position: static;   /* ← removes overlay behaviour */
+  margin-top: 1.5rem; /* ← adds spacing below stadium */
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  padding: 0.75rem 1rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+.injury-legend.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.injury-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+}
+
+.injury-legend__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.injury-legend__item[data-type="muscle"]   .injury-legend__dot { background: var(--color-muscle); }
+.injury-legend__item[data-type="joint"]    .injury-legend__dot { background: var(--color-joint); }
+.injury-legend__item[data-type="ligament"] .injury-legend__dot { background: var(--color-ligament); }
+.injury-legend__item[data-type="tendon"]   .injury-legend__dot { background: var(--color-tendon); }
+
+.injury-legend__scale {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.3);
+  border-top: 1px solid var(--color-border);
+  margin-top: 0.25rem;
+  padding-top: 0.35rem;
+}
+
+.injury-legend__dot--empty {
+  background: rgba(255,255,255,0.18) !important;
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+/* Injury text colouring in step cards */
+.injury-text[data-type="muscle"]   { color: var(--color-muscle); }
+.injury-text[data-type="joint"]    { color: var(--color-joint); }
+.injury-text[data-type="ligament"] { color: var(--color-ligament); }
+.injury-text[data-type="tendon"]   { color: var(--color-tendon); }
+
+/* =============================================
+   CONGESTION SCROLLY
+   ============================================= */
+.scrolly--congestion { background: var(--color-surface); }
+.sticky-visual--charts { background: var(--color-surface); }
+
+.chart-wrapper {
+  position: relative;
+  width: 90%;
+  max-width: 620px;
+  height: 460px;
+}
+
+/*
+  Warm card behind Datawrapper iframes — bridges dark page + light chart.
+  Matches NYT/FT "card inset" editorial pattern.
+*/
+.chart-card-bg {
+  position: absolute;
+  inset: -18px -22px;
+  background: #e9e8e4;
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.05),
+    0 10px 48px rgba(0,0,0,0.55);
+  z-index: 0;
+}
+
+.congestion-scrolly iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background: transparent;
+  border-radius: 2px;
+  z-index: 1;
+}
+
+.congestion-scrolly iframe.active { opacity: 1; }
+
+/* =============================================
+   FACTORS SECTION
+   ============================================= */
+.factors-section { border-top: 1px solid var(--color-border); }
+
+.factors-section__intro {
+  padding: var(--space-xl) clamp(1.5rem, 8vw, 8rem) var(--space-lg);
+  max-width: calc(var(--max-prose) + clamp(1.5rem, 8vw, 8rem));
+}
+
+.factors-section__eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 0.75rem;
+}
+
+.factors-section__intro h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.factor-card {
+  padding: var(--space-lg) clamp(1.5rem, 8vw, 8rem);
+  border-top: 1px solid var(--color-border);
+  background-color: #6fa158;
+}
+
+.factor-card--travel { background: var(--color-surface); }
+
+.factor-card__inner {
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+.factor-card__number {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: var(--color-accent);
+  margin-bottom: 0.5rem;
+}
+
+.factor-card h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: var(--space-md);
+}
+
+.factor-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.factor-list li {
+  padding-left: 1.25rem;
+  position: relative;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.factor-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+  font-size: 0.8rem;
+}
+
+.factor-list strong { color: var(--color-text); }
+
+.factor-card__callout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  min-width: 160px;
+  background: var(--color-surface-2);
+}
+
+.factor-card__big-number {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900;
+  color: var(--color-accent);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.factor-card__big-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+}
+
+/* =============================================
+   METHODOLOGY / LEARN MORE
+   ============================================= */
+.methodology-section {
+  padding: var(--space-xl) clamp(1.5rem, 8vw, 8rem);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.methodology-section__inner { max-width: var(--max-prose); }
+
+.methodology-section__note {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+}
+
+.learn-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0.65rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.learn-more-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: rgba(200,240,92,0.04);
+}
+
+.learn-more-btn__icon--minus { display: none; }
+
+.learn-more-btn[aria-expanded="true"] .learn-more-btn__icon--plus { display: none; }
+.learn-more-btn[aria-expanded="true"] .learn-more-btn__icon--minus { display: block; }
+
+.methodology-panel {
+  margin-top: var(--space-md);
+  border-left: 3px solid var(--color-accent);
+  padding-left: var(--space-md);
+  animation: panelReveal 0.35s ease;
+}
+
+@keyframes panelReveal {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.methodology-panel__inner h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+
+.methodology-panel__inner p {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin-bottom: 0.85rem;
+}
+
+.methodology-panel__inner p:last-child { margin-bottom: 0; }
+
+/* =============================================
+   FOOTER
+   ============================================= */
+.site-footer {
+  padding: var(--space-lg) clamp(1.5rem, 8vw, 8rem);
+  border-top: 1px solid var(--color-border);
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 900px) {
+  :root { --step-width: 100%; }
+
+  .scrolly { flex-direction: column; }
+
+  .sticky-visual {
+    position: relative;
+    width: 100%;
+    height: 55vh;
+    min-height: 340px;
+    top: 0;
+    flex-shrink: 0;
+    order: -1;
+    z-index: 3;
+  }
+
+  /* #stadium sizing is handled in the stadium-specific media block below */
+  #stadium {
+    max-width: 97%;
+  }
+
+  .steps {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    position: relative;
+    z-index: 2;
+  }
+
+  .step { min-height: 85vh; }
+  .step__card { max-width: 100%; }
+
+  .factor-card__inner { grid-template-columns: 1fr; }
+  .factor-card__callout { width: 100%; }
+
+  .evidence-section { min-height: 600vh; }
+
+  .chart-wrapper {
+    width: 95%;
+    height: 320px;
+  }
+
+  .chart-card-bg { inset: -10px -12px; }
+
+  .season-label { font-size: 0.6rem; }
+}
+
+@media (max-width: 600px) {
+  .hero__headline { font-size: clamp(2.5rem, 12vw, 4rem); }
+  .hero { padding-bottom: var(--space-lg); }
+  .injury-legend { display: none; }
+  .headline-stack { height: clamp(180px, 28vh, 280px); }
+  .season-label { display: none; }
+}
+
+/* =============================================
+   D3 DOT ANIMATIONS
+   Dots use CSS transitions driven by D3.
+   The .seat-dot class is set on all circles
+   by JS; fill transitions are handled in D3
+   transitions for smooth enter/update/exit.
+   ============================================= */
+/* =============================================
+   CONGESTION SCROLLY — mobile image fallbacks
+   ============================================= */
+
+/* Desktop: show iframes, hide images */
+.chart-img {
+  display: none;
+}
+
+/* Mobile (≤900px): hide iframes, show images */
+@media (max-width: 900px) {
+  .chart-iframe {
+    display: none !important;
+  }
+
+  .chart-img {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
+    background: #e9e8e4;
+  }
+
+  /* Active state mirrors the iframe .active pattern.
+     JS targets chart-img IDs via the same data-chart
+     attribute so no JS changes are needed. */
+  .chart-img.active {
+    opacity: 1;
+  }
+}
+/* =============================================
+   MOBILE-FRIENDLY VERSION
+   Appended below existing styles.
+   Breakpoints: ≤900px (tablet/mobile), ≤600px (phone)
+   ============================================= */
+
+/* ─────────────────────────────────────────────
+   MOBILE LAYOUT TOKENS
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  :root {
+    --step-width: 100%;
+    --space-xl: 5rem;
+    --space-lg: 2.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --space-xl: 3.5rem;
+    --space-lg: 2rem;
+    --space-md: 1.25rem;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   HERO — mobile
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .hero {
+    padding: var(--space-lg) clamp(1.25rem, 5vw, 2.5rem) var(--space-xl);
+    justify-content: flex-end;
+    min-height: 100svh;
+  }
+
+  .hero__headline {
+    font-size: clamp(2.8rem, 11vw, 5rem);
+    letter-spacing: -0.025em;
+  }
+
+  .hero__deck {
+    font-size: clamp(0.95rem, 3.5vw, 1.1rem);
+    max-width: 100%;
+  }
+
+  .hero__scroll-hint {
+    right: clamp(1.25rem, 5vw, 2.5rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero__headline { font-size: clamp(2.4rem, 13vw, 3.8rem); }
+  .hero { padding-bottom: var(--space-lg); }
+}
+
+/* ─────────────────────────────────────────────
+   PROSE SECTION — mobile
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .prose-section {
+    padding: var(--space-xl) clamp(1.25rem, 5vw, 2.5rem);
+  }
+
+  .prose-section__lead {
+    font-size: clamp(1.2rem, 5vw, 1.7rem);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   EVIDENCE SECTION — mobile headline stacking
+   On mobile the sticky panel sits at top; step
+   spacers are shorter so swiping feels snappy.
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .evidence-section {
+    /* Reduce total scroll height on mobile — each step is 70vh */
+    min-height: calc(4 * 70vh + 100vh);
+  }
+
+  .evidence-section__sticky {
+    height: 50vh;
+    min-height: 280px;
+  }
+
+  .headline-stack {
+    width: min(520px, 88vw);
+    height: clamp(160px, 30vh, 280px);
+  }
+
+  .headline-step {
+    height: 70vh;
+  }
+
+  .headline-step:first-child {
+    margin-top: 25vh;
+  }
+
+  .headline-card cite {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .evidence-section {
+    min-height: calc(4 * 60vh + 80vh);
+  }
+
+  .headline-stack {
+    width: min(340px, 92vw);
+    height: clamp(130px, 24vh, 220px);
+  }
+
+  .headline-step {
+    height: 60vh;
+  }
+
+  .headline-step:first-child {
+    margin-top: 20vh;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   PIVOT / BRIDGE — mobile
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .pivot-section {
+    padding: var(--space-xl) clamp(1.25rem, 5vw, 2.5rem);
+  }
+
+  .pivot-section__question {
+    font-size: clamp(1.4rem, 6vw, 2rem);
+  }
+
+  .pivot-section__sub {
+    font-size: clamp(0.9rem, 3.5vw, 1rem);
+    max-width: 100%;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   SCROLLY SHARED — mobile
+   Stack: visual on top, steps below (full-width)
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .scrolly {
+    flex-direction: column;
+  }
+
+  /*
+    On mobile the sticky visual stays sticky at the top.
+    It occupies ~45% of viewport height so there's room
+    for the step card below it without hiding the viz.
+  */
+  .sticky-visual {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 45vw;
+    min-height: 240px;
+    max-height: 340px;
+    flex-shrink: 0;
+    order: -1;
+    overflow: hidden;
+    z-index: 3;
+  }
+
+  .steps {
+    width: 100%;
+    padding: var(--space-sm) clamp(1.25rem, 5vw, 2rem);
+    z-index: 2;
+  }
+
+  /* Shorter min-height per step on mobile — less thumb-scroll fatigue */
+  .step {
+    min-height: 75vh;
+    padding: var(--space-md) 0;
+    justify-content: flex-start;
+    padding-top: var(--space-lg);
+  }
+
+  .step__card {
+    max-width: 100%;
+    border-radius: 4px;
+    padding: 1.25rem;
+    border-left-width: 4px;
+  }
+
+  .step__label {
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    margin-bottom: 0.6rem;
+  }
+
+  .step__card p {
+    font-size: 0.95rem;
+  }
+
+  .step__stat-number {
+    font-size: clamp(1.8rem, 8vw, 2.6rem);
+  }
+
+  .injury-list li {
+    font-size: 0.85rem;
+    padding: 0.55rem 0;
+  }
+
+  .injury-list__count {
+    font-size: 0.8rem;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   STADIUM SCROLLY — mobile
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .scrolly--stadium .sticky-visual {
+    height: 45vw;
+    min-height: 240px;
+    max-height: 340px;
+  }
+
+  /*
+    CRITICAL FIX: explicit dimensions for #stadium on mobile.
+    D3's initStadium() reads getBoundingClientRect().
+    We must give it a real height — NOT aspect-ratio alone,
+    which resolves to 0 if width is 0 at parse time.
+  */
+  #stadium {
+    width: 94%;
+    max-width: 100%;
+    height: calc(45vw - 1rem);
+    min-height: 200px;
+    max-height: 310px;
+    aspect-ratio: unset;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  #stadium.active { opacity: 1; }
+
+  .season-label {
+    font-size: 0.55rem;
+    padding: 0.25rem 0.65rem;
+    letter-spacing: 0.1em;
+  }
+
+  .injury-legend {
+    bottom: 0.5rem;
+    right: 0.5rem;
+    padding: 0.5rem 0.65rem;
+    gap: 0.25rem;
+  }
+
+  .injury-legend__item {
+    font-size: 0.6rem;
+    gap: 0.35rem;
+  }
+
+  .injury-legend__dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .injury-legend__scale {
+    font-size: 0.55rem;
+    padding-top: 0.25rem;
+    margin-top: 0.15rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .scrolly--stadium .sticky-visual {
+    height: 56vw;
+    min-height: 220px;
+  }
+
+  /* Hide legend on very small phones — too cramped */
+  .injury-legend { display: none; }
+
+  /* Hide season label badge — info lives in step cards */
+  .season-label  { display: none; }
+}
+
+/* ─────────────────────────────────────────────
+   CONGESTION SCROLLY — mobile
+   iframes stay but chart wrapper takes more height
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .scrolly--congestion .sticky-visual {
+    height: 50vw;
+    min-height: 260px;
+    max-height: 340px;
+    background: var(--color-surface);
+  }
+
+  .chart-wrapper {
+    width: 92%;
+    height: clamp(220px, 42vw, 320px);
+    max-width: 100%;
+  }
+
+  .chart-card-bg {
+    inset: -8px -10px;
+    border-radius: 4px;
+  }
+
+  .congestion-scrolly iframe {
+    border-radius: 2px;
+  }
+}
+
+@media (max-width: 600px) {
+  .chart-wrapper {
+    width: 96%;
+    height: clamp(200px, 50vw, 280px);
+  }
+
+  .chart-card-bg { inset: -6px -8px; }
+}
+
+/* ─────────────────────────────────────────────
+   FACTORS SECTION — mobile
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .factors-section__intro {
+    padding: var(--space-xl) clamp(1.25rem, 5vw, 2.5rem) var(--space-lg);
+    max-width: 100%;
+  }
+
+  .factors-section__intro h2 {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+
+  .factor-card {
+    padding: var(--space-lg) clamp(1.25rem, 5vw, 2.5rem);
+  }
+
+  .factor-card__inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  /* Callout becomes a highlighted inline block */
+  .factor-card__callout {
+    width: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--space-md);
+    padding: 1rem 1.25rem;
+    border-radius: 4px;
+    text-align: left;
+  }
+
+  .factor-card__big-number {
+    font-size: clamp(2rem, 10vw, 3rem);
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .factor-card__big-label {
+    font-size: 0.6rem;
+    line-height: 1.55;
+  }
+
+  .factor-card h3 {
+    font-size: clamp(1.4rem, 6vw, 2rem);
+    margin-bottom: var(--space-sm);
+  }
+
+  .factor-list li {
+    font-size: 0.9rem;
+  }
+
+  /* Travel card prose — readable on narrow screens */
+  .factor-card__text p {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 600px) {
+  .factor-card__callout {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .factor-card__big-number {
+    font-size: clamp(2rem, 12vw, 3rem);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   METHODOLOGY — mobile
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .methodology-section {
+    padding: var(--space-xl) clamp(1.25rem, 5vw, 2.5rem);
+  }
+
+  .methodology-section__inner {
+    max-width: 100%;
+  }
+
+  /* Larger tap target on the button */
+  .learn-more-btn {
+    padding: 0.85rem 1.35rem;
+    font-size: 0.7rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .methodology-panel {
+    padding-left: var(--space-sm);
+  }
+
+  .methodology-panel__inner p {
+    font-size: 0.85rem;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   FOOTER — mobile
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .site-footer {
+    padding: var(--space-lg) clamp(1.25rem, 5vw, 2.5rem);
+  }
+
+  .site-footer__inner {
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.65rem;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   TOUCH / INTERACTION IMPROVEMENTS
+   ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  /* Prevent text selection flicker while scrolling */
+  .scrolly, .evidence-section {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* Step cards are readable without hover effects */
+  .step__card {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Ensure iframes don't capture scroll on touch */
+  .congestion-scrolly .chart-iframe {
+    pointer-events: none;
+  }
+  .congestion-scrolly .chart-iframe.active {
+    pointer-events: auto;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   ACCESSIBILITY — reduced motion
+   Honour OS-level preference for all animations
+   ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .hero__scroll-dot { animation: none; }
+  .headline-card    { transition: opacity 0.2s ease; transform: none !important; }
+  .season-label,
+  .injury-legend    { transition: opacity 0.2s ease; }
+  .methodology-panel { animation: none; }
+}
