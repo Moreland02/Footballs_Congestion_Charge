@@ -1,8 +1,38 @@
+/* =============================================
+   style.css
+   Football's Congestion Charge — Digital Investigation
+
+   Contents (in order):
+     1.  External font imports
+     2.  Design tokens & reset
+     3.  Utility: .centered-content
+     4.  Hero
+     5.  Prose section
+     6.  Evidence section (headline scrolly)
+     7.  Pivot / Bridge sections
+     8.  Scrolly shared layout
+     9.  Stadium scrolly
+    10.  Injury legend
+    11.  Congestion scrolly / charts
+    12.  Factors section — intro heading
+    13.  Factor cards (Travel, Media Scrutiny)
+    14.  Match Intensity scrollytelling
+    15.  Intensity conclusion — factor card with stacked callouts
+    16.  Methodology / Learn More
+    17.  Footer
+    18.  Responsive — tablet & mobile (≤900px, ≤600px)
+    19.  Accessibility — reduced motion
+   ============================================= */
+
+
+/* =============================================
+   1. EXTERNAL FONT IMPORTS
+   ============================================= */
 @import url('https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap');
 
 
 /* =============================================
-   DESIGN TOKENS & RESET
+   2. DESIGN TOKENS & RESET
    ============================================= */
 :root {
   /* Palette */
@@ -29,7 +59,7 @@
   --font-body:    'DM Sans', system-ui, sans-serif;
   --font-mono:    'DM Mono', 'Courier New', monospace;
 
-  /* Spacing */
+  /* Spacing scale */
   --space-xs:  0.5rem;
   --space-sm:  1rem;
   --space-md:  2rem;
@@ -37,8 +67,12 @@
   --space-xl:  8rem;
 
   /* Layout */
-  --max-prose: 680px;
+  --max-prose:  680px;
   --step-width: 42%;
+
+  /* Shared horizontal page padding — used by all full-bleed sections
+     to keep left edges visually consistent */
+  --page-pad: clamp(1.5rem, 8vw, 8rem);
 }
 
 *, *::before, *::after {
@@ -58,8 +92,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+
 /* =============================================
-   HERO
+   3. UTILITY — .centered-content
+   Constrains and centres narrow editorial content
+   (hero, intro, pivot/bridge sections).
+   ============================================= */
+.centered-content {
+  max-width: 780px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+
+/* =============================================
+   4. HERO
    ============================================= */
 .hero {
   min-height: 100svh;
@@ -72,6 +119,7 @@ body {
   background-color: #fffbe8;
 }
 
+/* Subtle grid texture */
 .hero::before {
   content: '';
   position: absolute;
@@ -161,8 +209,10 @@ body {
   60%       { transform: translateY(12px); opacity: 0.2; }
 }
 
+
 /* =============================================
-   PROSE SECTION
+   5. PROSE SECTION
+   Full-screen standalone text (intro paragraph).
    ============================================= */
 .prose-section {
   padding: var(--space-xl) clamp(1.5rem, 8vw, 8rem);
@@ -178,8 +228,9 @@ body {
   line-height: 1.35;
 }
 
+
 /* =============================================
-   EVIDENCE SECTION
+   6. EVIDENCE SECTION — stacked headline cards
    ============================================= */
 .evidence-section {
   position: relative;
@@ -234,6 +285,7 @@ body {
   z-index: 1;
 }
 
+/* Stacking order — latest headline on top */
 #hcard0 { z-index: 1; }
 #hcard1 { z-index: 2; }
 #hcard2 { z-index: 3; }
@@ -241,7 +293,7 @@ body {
 
 .headline-card.active {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0) scale(1.8);
 }
 
 .headline-card__inner {
@@ -273,8 +325,11 @@ body {
 
 .headline-card.superseded cite { opacity: 0; }
 
+
 /* =============================================
-   PIVOT / BRIDGE
+   7. PIVOT / BRIDGE SECTIONS
+   Full-screen standalone text — question slides.
+   Styled consistently with .prose-section.
    ============================================= */
 .pivot-section {
   padding: var(--space-xl) clamp(1.5rem, 8vw, 8rem);
@@ -283,13 +338,16 @@ body {
 
 .pivot-section--dark { background: var(--color-surface); }
 
-.pivot-section__inner { max-width: var(--max-prose); }
+.pivot-section__inner {
+  max-width: var(--max-prose);
+  /* Bottom margin creates visual breathing room inside .centered-content */
+  margin-bottom: 10rem;
+}
 
 .pivot-section__question {
   font-family: var(--font-display);
   font-size: clamp(1.6rem, 3vw, 2.5rem);
   font-weight: 700;
-  font-style: italic;
   line-height: 1.25;
   margin-bottom: var(--space-md);
 }
@@ -301,8 +359,14 @@ body {
   line-height: 1.7;
 }
 
+/* "So what is it?" heading needs extra space before the scrolly starts */
+#WEDTPL {
+  margin-bottom: 17rem;
+}
+
+
 /* =============================================
-   SCROLLY LAYOUT (shared)
+   8. SCROLLY SHARED LAYOUT
    ============================================= */
 .scrolly {
   display: flex;
@@ -311,6 +375,7 @@ body {
   border-top: 1px solid var(--color-border);
 }
 
+/* Shared step column */
 .steps {
   width: var(--step-width);
   padding: 0 clamp(1.5rem, 4vw, 4rem);
@@ -334,7 +399,6 @@ body {
   padding: var(--space-md);
   backdrop-filter: blur(10px);
   max-width: 400px;
-  /* Soft elevation */
   box-shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
 
@@ -355,7 +419,6 @@ body {
 }
 
 .step__card p:last-child { margin-bottom: 0; }
-.step__card strong { color: #fff; }
 
 .step__small {
   font-size: 0.8rem !important;
@@ -380,6 +443,7 @@ body {
   margin-top: 0.25rem;
 }
 
+/* Injury list inside step cards */
 .injury-list {
   list-style: none;
   margin-top: 0.5rem;
@@ -402,9 +466,18 @@ body {
   font-size: 0.85rem;
 }
 
+/* Injury text colouring in step cards */
+.injury-text[data-type="muscle"]   { color: var(--color-muscle); }
+.injury-text[data-type="joint"]    { color: var(--color-joint); }
+.injury-text[data-type="ligament"] { color: var(--color-ligament); }
+.injury-text[data-type="tendon"]   { color: var(--color-tendon); }
+
+
 /* =============================================
-   STICKY VISUAL (shared)
+   9. STADIUM SCROLLY
    ============================================= */
+
+/* Shared sticky visual panel */
 .sticky-visual {
   position: sticky;
   top: 0;
@@ -417,9 +490,6 @@ body {
   overflow: hidden;
 }
 
-/* =============================================
-   STADIUM SCROLLY — Atmosphere
-   ============================================= */
 .scrolly--stadium .sticky-visual {
   background: radial-gradient(
     ellipse at 50% 65%,
@@ -428,23 +498,11 @@ body {
   );
 }
 
-/* D3 SVG fills container */
-#stadium svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  background: #fffbe8 !important;  /* ← add here, globally */
-}
-
-
-/* ---- Stadium Container ---- */
+/* Stadium container — D3 renders an SVG inside this */
 #stadium {
   position: relative;
   width: 100%;
   max-width: 600px;
-  /* Taller aspect ratio for tiered layout */
   aspect-ratio: 4 / 3;
   opacity: 0;
   transition: opacity 0.6s ease;
@@ -452,17 +510,17 @@ body {
 
 #stadium.active { opacity: 1; }
 
-/* D3 SVG fills container */
+/* D3 SVG fills the container */
 #stadium svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   overflow: visible;
+  background: #fffbe8 !important;
 }
 
-
-/* ---- Season label ---- */
+/* Season label badge */
 .season-label {
   position: absolute;
   top: clamp(0.75rem, 2vw, 1.25rem);
@@ -473,7 +531,7 @@ body {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-accent);
-    background: #fffbe8;
+  background: #fffbe8;
   border: 1px solid rgba(200,240,92,0.2);
   border-radius: 2px;
   padding: 0.3rem 0.85rem;
@@ -486,7 +544,7 @@ body {
 
 .season-label.active { opacity: 1; }
 
-/* ---- Tier labels (injected by JS) ---- */
+/* Stand tier labels (injected by D3) */
 .tier-label-text {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
@@ -497,12 +555,13 @@ body {
   transition: opacity 0.4s ease;
 }
 
+
 /* =============================================
-   INJURY LEGEND
+   10. INJURY LEGEND
    ============================================= */
 .injury-legend {
-  position: static;   /* ← removes overlay behaviour */
-  margin-top: 1.5rem; /* ← adds spacing below stadium */
+  position: static;
+  margin-top: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -538,6 +597,7 @@ body {
   flex-shrink: 0;
 }
 
+/* Dot colours mapped from data-type attributes */
 .injury-legend__item[data-type="muscle"]   .injury-legend__dot { background: var(--color-muscle); }
 .injury-legend__item[data-type="joint"]    .injury-legend__dot { background: var(--color-joint); }
 .injury-legend__item[data-type="ligament"] .injury-legend__dot { background: var(--color-ligament); }
@@ -560,14 +620,9 @@ body {
   border: 1px solid rgba(255,255,255,0.25);
 }
 
-/* Injury text colouring in step cards */
-.injury-text[data-type="muscle"]   { color: var(--color-muscle); }
-.injury-text[data-type="joint"]    { color: var(--color-joint); }
-.injury-text[data-type="ligament"] { color: var(--color-ligament); }
-.injury-text[data-type="tendon"]   { color: var(--color-tendon); }
 
 /* =============================================
-   CONGESTION SCROLLY
+   11. CONGESTION SCROLLY — Datawrapper charts
    ============================================= */
 .scrolly--congestion { background: var(--color-surface); }
 .sticky-visual--charts { background: var(--color-surface); }
@@ -579,14 +634,11 @@ body {
   height: 460px;
 }
 
-/*
-  Warm card behind Datawrapper iframes — bridges dark page + light chart.
-  Matches NYT/FT "card inset" editorial pattern.
-*/
+/* Warm white card behind the Datawrapper iframes */
 .chart-card-bg {
   position: absolute;
   inset: -18px -22px;
-  background: #e9e8e4;
+  background: #ffffff;
   border-radius: 6px;
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.05),
@@ -609,10 +661,16 @@ body {
 
 .congestion-scrolly iframe.active { opacity: 1; }
 
+/* Desktop: show iframes, hide static images */
+.chart-img { display: none; }
+
+
 /* =============================================
-   FACTORS SECTION
+   12. FACTORS SECTION — intro heading
    ============================================= */
-.factors-section { border-top: 1px solid var(--color-border); }
+.factors-section {
+  border-top: 1px solid var(--color-border);
+}
 
 .factors-section__intro {
   padding: var(--space-xl) clamp(1.5rem, 8vw, 8rem) var(--space-lg);
@@ -636,19 +694,36 @@ body {
   line-height: 1.15;
 }
 
+
+/* =============================================
+   13. FACTOR CARDS — Travel & Media Scrutiny
+   ============================================= */
 .factor-card {
-  padding: var(--space-lg) clamp(1.5rem, 8vw, 8rem);
+  padding: var(--space-lg) var(--page-pad);
   border-top: 1px solid var(--color-border);
-  background-color: #6fa158;
+  /* Default background is the page colour; variants override below */
+  background-color: var(--color-bg);
 }
 
-.factor-card--travel { background: var(--color-surface); }
+/* Travel gets the green accent background */
+.factor-card--travel { background: #6fa158; }
+
+/* Media Scrutiny keeps the neutral page background */
+.factor-card--media_scrutiny { background: var(--color-surface); }
+
+/* Intensity conclusion blends into the page — no coloured background */
+.factor-card--intensity-conclusion { background: var(--color-bg); }
 
 .factor-card__inner {
-  max-width: 1000px;
+  /*
+    Generous max-width and fluid gap so the right-column callout(s) sit
+    well to the right — aligned with the stacked callouts in the intensity
+    conclusion card above. All factor sections share this grid definition.
+  */
+  max-width: 1200px;
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-lg);
+  grid-template-columns: 1fr 260px;
+  gap: clamp(var(--space-xl), 10vw, 12rem);
   align-items: center;
 }
 
@@ -668,6 +743,16 @@ body {
   line-height: 1.1;
   margin-bottom: var(--space-md);
 }
+
+/* Body prose inside factor cards — canonical body copy style */
+.factor-card__text p {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin-bottom: 0.85rem;
+}
+
+.factor-card__text p:last-child { margin-bottom: 0; }
 
 .factor-list {
   list-style: none;
@@ -694,12 +779,13 @@ body {
 
 .factor-list strong { color: var(--color-text); }
 
+/* Callout stat card — sits to the right of the prose text */
 .factor-card__callout {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: var(--space-md);
+  align-items: flex-start;
+  text-align: left;
+  padding: 1rem 1.5rem 1rem 2.5rem;
   border: 1px solid var(--color-border);
   border-radius: 2px;
   min-width: 160px;
@@ -725,8 +811,256 @@ body {
   letter-spacing: 0.04em;
 }
 
+/*
+  Modifier for the intensity-conclusion card: top-aligns columns so the
+  callout stack starts at the same vertical position as the prose text.
+*/
+.factor-card__inner--stacked-callouts {
+  grid-template-columns: 1fr 260px;
+  align-items: start;
+}
+
+/*
+  Container for multiple callout boxes stacked vertically in the right
+  column of the intensity-conclusion card.
+*/
+.factor-card__callout-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding-top: 4rem; /* adjust this value to taste */
+}
+
+
 /* =============================================
-   METHODOLOGY / LEARN MORE
+   14. MATCH INTENSITY SCROLLYTELLING
+   Sticky bar chart on left, narrative steps on right.
+   ============================================= */
+.scrolly--intensity {
+  position: relative;
+  display: flex;
+  gap: 0;
+}
+
+/* Sticky left panel — mirrors the sticky-visual pattern but
+   uses its own class so padding can match factor-card alignment */
+.scrolly--intensity .sticky-visual--intensity {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 52%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  /* Left padding matches --page-pad so the chart aligns with factor-card text */
+  padding: 3rem 3rem 3rem var(--page-pad);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Intro label + heading block above the bar chart */
+.intensity-intro-block {
+  margin-bottom: 1.2rem;
+}
+
+.intensity-intro-block .factor-card__number {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  opacity: 0.45;
+  margin-bottom: 0.5rem;
+}
+
+.intensity-intro-block h3 {
+  font-family: 'Fjalla One', sans-serif;
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  font-weight: 700;
+  margin: 0 0 1rem;
+  line-height: 1.2;
+}
+
+.intensity-intro-block p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  opacity: 0.8;
+  margin: 0 0 0.6rem;
+}
+
+/* Bar chart container */
+.intensity-chart {
+  width: 100%;
+}
+
+.intensity-chart__title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0;
+  margin-bottom: 0.7rem;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.intensity-chart__title.visible {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+/* Individual stat bar rows — hidden until scroll triggers JS */
+.intensity-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.intensity-bar-row.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.intensity-bar-row__label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.7;
+  letter-spacing: 0.02em;
+}
+
+.intensity-bar-row__track {
+  position: relative;
+  height: 36px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.intensity-bar-row__fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Colour per metric — ordered heat (sprint → minutes) */
+.intensity-bar-row__fill--sprints-dist  { background: #e05c3a; }
+.intensity-bar-row__fill--sprints-week  { background: #d4444e; }
+.intensity-bar-row__fill--hsr           { background: #c4398a; }
+.intensity-bar-row__fill--hid           { background: #9b35b5; }
+.intensity-bar-row__fill--minutes       { background: #5b57d6; }
+
+.intensity-bar-row__value {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #000000;
+  opacity: 0;
+  transition: opacity 0.4s ease 0.7s;
+}
+
+.intensity-bar-row.visible .intensity-bar-row__value { opacity: 1; }
+
+/* Divider between sprint stats and match-minutes stat */
+.intensity-chart__divider {
+  height: 1px;
+  background: rgba(0,0,0,0.1);
+  margin: 0.5rem 0 1.5rem;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.intensity-chart__divider.visible { opacity: 1; }
+
+.intensity-chart__divider-label {
+  font-size: 0.72rem;
+  opacity: 0;
+  font-style: italic;
+  margin-bottom: 1.2rem;
+  transition: opacity 0.5s ease;
+}
+
+.intensity-chart__divider-label.visible { opacity: 0.4; }
+
+/* Scrolling steps (right column) */
+.scrolly--intensity .steps--intensity {
+  width: 48%;
+}
+
+.scrolly--intensity .steps--intensity .step {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 2rem 3rem 2rem 2rem;
+  box-sizing: border-box;
+}
+
+.scrolly--intensity .steps--intensity .step:first-child { min-height: 80vh; }
+.scrolly--intensity .steps--intensity .step:last-child  { min-height: 80vh; }
+
+/* Active stat highlight card — appears in the right-column step card */
+.intensity-highlight {
+  margin-top: 2rem;
+  padding: 1.2rem 1.5rem;
+  border-left: 3px solid currentColor;
+  background: rgba(0,0,0,0.04);
+  border-radius: 0 6px 6px 0;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.intensity-highlight.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.intensity-highlight__number {
+  font-family: 'Fjalla One', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.intensity-highlight__label {
+  font-size: 0.82rem;
+  opacity: 0.6;
+  line-height: 1.4;
+}
+
+/* Colour per highlight — matches bar fill colours */
+.intensity-highlight--0 { color: #e05c3a; border-color: #e05c3a; }
+.intensity-highlight--1 { color: #d4444e; border-color: #d4444e; }
+.intensity-highlight--2 { color: #c4398a; border-color: #c4398a; }
+.intensity-highlight--3 { color: #9b35b5; border-color: #9b35b5; }
+.intensity-highlight--4 { color: #5b57d6; border-color: #5b57d6; }
+
+
+/* =============================================
+   15. INTENSITY CONCLUSION — FACTOR CARD WITH STACKED CALLOUTS
+   Same text-left / callouts-right layout as Travel and Media Scrutiny.
+   Background and grid modifiers defined above in sections 13 and here.
+   ============================================= */
+
+
+/* =============================================
+   16. METHODOLOGY / LEARN MORE
    ============================================= */
 .methodology-section {
   padding: var(--space-xl) clamp(1.5rem, 8vw, 8rem);
@@ -767,7 +1101,7 @@ body {
 
 .learn-more-btn__icon--minus { display: none; }
 
-.learn-more-btn[aria-expanded="true"] .learn-more-btn__icon--plus { display: none; }
+.learn-more-btn[aria-expanded="true"] .learn-more-btn__icon--plus  { display: none; }
 .learn-more-btn[aria-expanded="true"] .learn-more-btn__icon--minus { display: block; }
 
 .methodology-panel {
@@ -798,8 +1132,9 @@ body {
 
 .methodology-panel__inner p:last-child { margin-bottom: 0; }
 
+
 /* =============================================
-   FOOTER
+   17. FOOTER
    ============================================= */
 .site-footer {
   padding: var(--space-lg) clamp(1.5rem, 8vw, 8rem);
@@ -816,116 +1151,12 @@ body {
   color: var(--color-text-muted);
 }
 
-/* =============================================
-   RESPONSIVE
-   ============================================= */
-@media (max-width: 900px) {
-  :root { --step-width: 100%; }
-
-  .scrolly { flex-direction: column; }
-
-  .sticky-visual {
-    position: relative;
-    width: 100%;
-    height: 55vh;
-    min-height: 340px;
-    top: 0;
-    flex-shrink: 0;
-    order: -1;
-    z-index: 3;
-  }
-
-  /* #stadium sizing is handled in the stadium-specific media block below */
-  #stadium {
-    max-width: 97%;
-  }
-
-  .steps {
-    width: 100%;
-    padding: var(--space-sm) var(--space-md);
-    position: relative;
-    z-index: 2;
-  }
-
-  .step { min-height: 85vh; }
-  .step__card { max-width: 100%; }
-
-  .factor-card__inner { grid-template-columns: 1fr; }
-  .factor-card__callout { width: 100%; }
-
-  .evidence-section { min-height: 600vh; }
-
-  .chart-wrapper {
-    width: 95%;
-    height: 320px;
-  }
-
-  .chart-card-bg { inset: -10px -12px; }
-
-  .season-label { font-size: 0.6rem; }
-}
-
-@media (max-width: 600px) {
-  .hero__headline { font-size: clamp(2.5rem, 12vw, 4rem); }
-  .hero { padding-bottom: var(--space-lg); }
-  .injury-legend { display: none; }
-  .headline-stack { height: clamp(180px, 28vh, 280px); }
-  .season-label { display: none; }
-}
 
 /* =============================================
-   D3 DOT ANIMATIONS
-   Dots use CSS transitions driven by D3.
-   The .seat-dot class is set on all circles
-   by JS; fill transitions are handled in D3
-   transitions for smooth enter/update/exit.
-   ============================================= */
-/* =============================================
-   CONGESTION SCROLLY — mobile image fallbacks
+   18. RESPONSIVE — tablet & mobile
    ============================================= */
 
-/* Desktop: show iframes, hide images */
-.chart-img {
-  display: none;
-}
-
-/* Mobile (≤900px): hide iframes, show images */
-@media (max-width: 900px) {
-  .chart-iframe {
-    display: none !important;
-  }
-
-  .chart-img {
-    display: block;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-    border-radius: 2px;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    z-index: 1;
-    background: #e9e8e4;
-  }
-
-  /* Active state mirrors the iframe .active pattern.
-     JS targets chart-img IDs via the same data-chart
-     attribute so no JS changes are needed. */
-  .chart-img.active {
-    opacity: 1;
-  }
-}
-/* =============================================
-   MOBILE-FRIENDLY VERSION
-   Appended below existing styles.
-   Breakpoints: ≤900px (tablet/mobile), ≤600px (phone)
-   ============================================= */
-
-/* ─────────────────────────────────────────────
-   MOBILE LAYOUT TOKENS
-   ───────────────────────────────────────────── */
+/* ── Layout tokens ───────────────────────────── */
 @media (max-width: 900px) {
   :root {
     --step-width: 100%;
@@ -942,9 +1173,7 @@ body {
   }
 }
 
-/* ─────────────────────────────────────────────
-   HERO — mobile
-   ───────────────────────────────────────────── */
+/* ── Hero ─────────────────────────────────────── */
 @media (max-width: 900px) {
   .hero {
     padding: var(--space-lg) clamp(1.25rem, 5vw, 2.5rem) var(--space-xl);
@@ -972,9 +1201,7 @@ body {
   .hero { padding-bottom: var(--space-lg); }
 }
 
-/* ─────────────────────────────────────────────
-   PROSE SECTION — mobile
-   ───────────────────────────────────────────── */
+/* ── Prose section ───────────────────────────── */
 @media (max-width: 900px) {
   .prose-section {
     padding: var(--space-xl) clamp(1.25rem, 5vw, 2.5rem);
@@ -985,14 +1212,9 @@ body {
   }
 }
 
-/* ─────────────────────────────────────────────
-   EVIDENCE SECTION — mobile headline stacking
-   On mobile the sticky panel sits at top; step
-   spacers are shorter so swiping feels snappy.
-   ───────────────────────────────────────────── */
+/* ── Evidence / headline section ─────────────── */
 @media (max-width: 900px) {
   .evidence-section {
-    /* Reduce total scroll height on mobile — each step is 70vh */
     min-height: calc(4 * 70vh + 100vh);
   }
 
@@ -1006,17 +1228,9 @@ body {
     height: clamp(160px, 30vh, 280px);
   }
 
-  .headline-step {
-    height: 70vh;
-  }
-
-  .headline-step:first-child {
-    margin-top: 25vh;
-  }
-
-  .headline-card cite {
-    font-size: 0.6rem;
-  }
+  .headline-step { height: 70vh; }
+  .headline-step:first-child { margin-top: 25vh; }
+  .headline-card cite { font-size: 0.6rem; }
 }
 
 @media (max-width: 600px) {
@@ -1029,26 +1243,17 @@ body {
     height: clamp(130px, 24vh, 220px);
   }
 
-  .headline-step {
-    height: 60vh;
-  }
-
-  .headline-step:first-child {
-    margin-top: 20vh;
-  }
+  .headline-step { height: 60vh; }
+  .headline-step:first-child { margin-top: 20vh; }
 }
 
-/* ─────────────────────────────────────────────
-   PIVOT / BRIDGE — mobile
-   ───────────────────────────────────────────── */
+/* ── Pivot / bridge ───────────────────────────── */
 @media (max-width: 900px) {
   .pivot-section {
     padding: var(--space-xl) clamp(1.25rem, 5vw, 2.5rem);
   }
 
-  .pivot-section__question {
-    font-size: clamp(1.4rem, 6vw, 2rem);
-  }
+  .pivot-section__question { font-size: clamp(1.4rem, 6vw, 2rem); }
 
   .pivot-section__sub {
     font-size: clamp(0.9rem, 3.5vw, 1rem);
@@ -1056,20 +1261,14 @@ body {
   }
 }
 
-/* ─────────────────────────────────────────────
-   SCROLLY SHARED — mobile
-   Stack: visual on top, steps below (full-width)
-   ───────────────────────────────────────────── */
+/* ── Scrolly shared ───────────────────────────── */
 @media (max-width: 900px) {
   .scrolly {
     flex-direction: column;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
 
-  /*
-    On mobile the sticky visual stays sticky at the top.
-    It occupies ~45% of viewport height so there's room
-    for the step card below it without hiding the viz.
-  */
   .sticky-visual {
     position: sticky;
     top: 0;
@@ -1089,7 +1288,6 @@ body {
     z-index: 2;
   }
 
-  /* Shorter min-height per step on mobile — less thumb-scroll fatigue */
   .step {
     min-height: 75vh;
     padding: var(--space-md) 0;
@@ -1102,6 +1300,7 @@ body {
     border-radius: 4px;
     padding: 1.25rem;
     border-left-width: 4px;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .step__label {
@@ -1110,27 +1309,19 @@ body {
     margin-bottom: 0.6rem;
   }
 
-  .step__card p {
-    font-size: 0.95rem;
-  }
+  .step__card p { font-size: 0.95rem; }
 
-  .step__stat-number {
-    font-size: clamp(1.8rem, 8vw, 2.6rem);
-  }
+  .step__stat-number { font-size: clamp(1.8rem, 8vw, 2.6rem); }
 
   .injury-list li {
     font-size: 0.85rem;
     padding: 0.55rem 0;
   }
 
-  .injury-list__count {
-    font-size: 0.8rem;
-  }
+  .injury-list__count { font-size: 0.8rem; }
 }
 
-/* ─────────────────────────────────────────────
-   STADIUM SCROLLY — mobile
-   ───────────────────────────────────────────── */
+/* ── Stadium scrolly ─────────────────────────── */
 @media (max-width: 900px) {
   .scrolly--stadium .sticky-visual {
     height: 45vw;
@@ -1138,12 +1329,7 @@ body {
     max-height: 340px;
   }
 
-  /*
-    CRITICAL FIX: explicit dimensions for #stadium on mobile.
-    D3's initStadium() reads getBoundingClientRect().
-    We must give it a real height — NOT aspect-ratio alone,
-    which resolves to 0 if width is 0 at parse time.
-  */
+  /* Critical: give #stadium explicit dimensions for D3 getBoundingClientRect */
   #stadium {
     width: 94%;
     max-width: 100%;
@@ -1170,15 +1356,8 @@ body {
     gap: 0.25rem;
   }
 
-  .injury-legend__item {
-    font-size: 0.6rem;
-    gap: 0.35rem;
-  }
-
-  .injury-legend__dot {
-    width: 7px;
-    height: 7px;
-  }
+  .injury-legend__item { font-size: 0.6rem; gap: 0.35rem; }
+  .injury-legend__dot { width: 7px; height: 7px; }
 
   .injury-legend__scale {
     font-size: 0.55rem;
@@ -1193,17 +1372,16 @@ body {
     min-height: 220px;
   }
 
-  /* Hide legend on very small phones — too cramped */
-  .injury-legend { display: none; }
+  .hero__headline { font-size: clamp(2.5rem, 12vw, 4rem); }
+  .hero { padding-bottom: var(--space-lg); }
 
-  /* Hide season label badge — info lives in step cards */
-  .season-label  { display: none; }
+  /* Legend and season badge too cramped on small phones */
+  .injury-legend { display: none; }
+  .headline-stack { height: clamp(180px, 28vh, 280px); }
+  .season-label { display: none; }
 }
 
-/* ─────────────────────────────────────────────
-   CONGESTION SCROLLY — mobile
-   iframes stay but chart wrapper takes more height
-   ───────────────────────────────────────────── */
+/* ── Congestion scrolly ───────────────────────── */
 @media (max-width: 900px) {
   .scrolly--congestion .sticky-visual {
     height: 50vw;
@@ -1223,9 +1401,31 @@ body {
     border-radius: 4px;
   }
 
-  .congestion-scrolly iframe {
+  .congestion-scrolly iframe { border-radius: 2px; }
+
+  /* Prevent iframes capturing touch scroll events */
+  .congestion-scrolly .chart-iframe { pointer-events: none; }
+  .congestion-scrolly .chart-iframe.active { pointer-events: auto; }
+
+  /* Mobile: hide iframes, show static image fallbacks */
+  .chart-iframe { display: none !important; }
+
+  .chart-img {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
     border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 1;
+    background: #e9e8e4;
   }
+
+  .chart-img.active { opacity: 1; }
 }
 
 @media (max-width: 600px) {
@@ -1237,29 +1437,29 @@ body {
   .chart-card-bg { inset: -6px -8px; }
 }
 
-/* ─────────────────────────────────────────────
-   FACTORS SECTION — mobile
-   ───────────────────────────────────────────── */
+/* ── Factors section intro ────────────────────── */
 @media (max-width: 900px) {
   .factors-section__intro {
     padding: var(--space-xl) clamp(1.25rem, 5vw, 2.5rem) var(--space-lg);
     max-width: 100%;
   }
 
-  .factors-section__intro h2 {
-    font-size: clamp(1.5rem, 6vw, 2rem);
-  }
+  .factors-section__intro h2 { font-size: clamp(1.5rem, 6vw, 2rem); }
+}
 
+/* ── Factor cards ─────────────────────────────── */
+@media (max-width: 900px) {
   .factor-card {
     padding: var(--space-lg) clamp(1.25rem, 5vw, 2.5rem);
   }
 
+  /* Stack text and callout vertically on mobile */
   .factor-card__inner {
     grid-template-columns: 1fr;
-    gap: var(--space-md);
+    gap: 2rem;
+    max-width: 100%;
   }
 
-  /* Callout becomes a highlighted inline block */
   .factor-card__callout {
     width: 100%;
     flex-direction: row;
@@ -1287,14 +1487,10 @@ body {
     margin-bottom: var(--space-sm);
   }
 
-  .factor-list li {
-    font-size: 0.9rem;
-  }
+  .factor-list li { font-size: 0.9rem; }
 
-  /* Travel card prose — readable on narrow screens */
   .factor-card__text p {
     font-size: 0.9rem;
-    color: var(--color-text-muted);
     line-height: 1.7;
   }
 }
@@ -1306,24 +1502,54 @@ body {
     gap: 0.25rem;
   }
 
-  .factor-card__big-number {
-    font-size: clamp(2rem, 12vw, 3rem);
+  .factor-card__big-number { font-size: clamp(2rem, 12vw, 3rem); }
+}
+
+/* ── Intensity scrolly ────────────────────────── */
+@media (max-width: 700px) {
+  .scrolly--intensity {
+    flex-direction: column;
+  }
+
+  .scrolly--intensity .sticky-visual--intensity {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 2rem 1.5rem 1rem;
+  }
+
+  .scrolly--intensity .steps--intensity {
+    width: 100%;
+  }
+
+  .scrolly--intensity .steps--intensity .step {
+    padding: 2rem 1.5rem;
+    min-height: 60vh;
   }
 }
 
-/* ─────────────────────────────────────────────
-   METHODOLOGY — mobile
-   ───────────────────────────────────────────── */
+/* ── Intensity conclusion (factor-card with stacked callouts) ── */
+@media (max-width: 900px) {
+  /* Collapse the two-column grid to single column on mobile,
+     matching the Travel/Media Scrutiny mobile behaviour */
+  .factor-card__inner--stacked-callouts {
+    grid-template-columns: 1fr;
+  }
+
+  .factor-card__callout-stack {
+    width: 100%;
+    gap: var(--space-sm);
+  }
+}
+
+/* ── Methodology ─────────────────────────────── */
 @media (max-width: 900px) {
   .methodology-section {
     padding: var(--space-xl) clamp(1.25rem, 5vw, 2.5rem);
   }
 
-  .methodology-section__inner {
-    max-width: 100%;
-  }
+  .methodology-section__inner { max-width: 100%; }
 
-  /* Larger tap target on the button */
   .learn-more-btn {
     padding: 0.85rem 1.35rem;
     font-size: 0.7rem;
@@ -1331,18 +1557,11 @@ body {
     justify-content: center;
   }
 
-  .methodology-panel {
-    padding-left: var(--space-sm);
-  }
-
-  .methodology-panel__inner p {
-    font-size: 0.85rem;
-  }
+  .methodology-panel { padding-left: var(--space-sm); }
+  .methodology-panel__inner p { font-size: 0.85rem; }
 }
 
-/* ─────────────────────────────────────────────
-   FOOTER — mobile
-   ───────────────────────────────────────────── */
+/* ── Footer ───────────────────────────────────── */
 @media (max-width: 900px) {
   .site-footer {
     padding: var(--space-lg) clamp(1.25rem, 5vw, 2.5rem);
@@ -1355,38 +1574,19 @@ body {
   }
 }
 
-/* ─────────────────────────────────────────────
-   TOUCH / INTERACTION IMPROVEMENTS
-   ───────────────────────────────────────────── */
-@media (max-width: 900px) {
-  /* Prevent text selection flicker while scrolling */
-  .scrolly, .evidence-section {
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-  }
 
-  /* Step cards are readable without hover effects */
-  .step__card {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /* Ensure iframes don't capture scroll on touch */
-  .congestion-scrolly .chart-iframe {
-    pointer-events: none;
-  }
-  .congestion-scrolly .chart-iframe.active {
-    pointer-events: auto;
-  }
-}
-
-/* ─────────────────────────────────────────────
-   ACCESSIBILITY — reduced motion
-   Honour OS-level preference for all animations
-   ───────────────────────────────────────────── */
+/* =============================================
+   19. ACCESSIBILITY — reduced motion
+   Respect the OS-level prefers-reduced-motion
+   preference for all animations and transitions.
+   ============================================= */
 @media (prefers-reduced-motion: reduce) {
-  .hero__scroll-dot { animation: none; }
-  .headline-card    { transition: opacity 0.2s ease; transform: none !important; }
+  .hero__scroll-dot    { animation: none; }
+  .headline-card       { transition: opacity 0.2s ease; transform: none !important; }
   .season-label,
-  .injury-legend    { transition: opacity 0.2s ease; }
-  .methodology-panel { animation: none; }
+  .injury-legend       { transition: opacity 0.2s ease; }
+  .methodology-panel   { animation: none; }
+  .intensity-bar-row   { transition: opacity 0.2s ease; }
+  .intensity-bar-row__fill { transition: width 0.2s ease; }
+  .intensity-highlight { transition: opacity 0.2s ease; }
 }

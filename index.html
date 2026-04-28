@@ -3,11 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Cost of the Calendar — Football's Injury Crisis</title>
+  <title>Football's Congestion Charge</title>
+
+  <!-- ── Google Fonts ──────────────────────────────────────────────────── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- ── Stylesheet (all styles live in style.css — no inline blocks) ─── -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- ── Third-party libraries ─────────────────────────────────────────── -->
   <script src="https://unpkg.com/scrollama"></script>
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
@@ -16,37 +22,40 @@
   <!-- =============================================
        HERO
   ============================================= -->
-  <section class="hero">
-    <div class="hero__bg-rule"></div>
-    <div class="hero__content">
-      <div class="hero__eyebrow">A Digital Investigation · 2026</div>
-      <h1 class="hero__headline">
-        <em>The Cost</em><br>of the Calendar
-      </h1>
-      <p class="hero__deck">
-        Prominent footballers have become increasingly vocal about the physical toll 
-        of a relentless fixture schedule. But are injuries really increasing? And if so, why? 
-      </p>
-      <div class="hero__byline">By William McNamee &amp; Megan Moreland</div>
-    </div>
-    <div class="hero__scroll-hint" aria-hidden="true">
-      <svg width="20" height="32" viewBox="0 0 20 32"><rect x="1" y="1" width="18" height="30" rx="9" stroke="currentColor" stroke-width="1.5" fill="none"/><circle class="hero__scroll-dot" cx="10" cy="10" r="3" fill="currentColor"/></svg>
-      <span>Scroll</span>
-    </div>
-  </section>
+  <div class="centered-content">
+    <section class="hero">
+      <div class="hero__bg-rule"></div>
+      <div class="hero__content">
+        <div class="hero__eyebrow">A Digital Investigation · 2026</div>
+        <h1 class="hero__headline">
+          Football's Congestion Charge
+        </h1>
+        <p class="hero__deck">
+          Are we really seeing an increase in injuries in elite-level football?
+          And if so, is the relentless fixture schedule to blame?
+        </p>
+        <div class="hero__byline">By William McNamee &amp; Megan Moreland</div>
+      </div>
+      <div class="hero__scroll-hint" aria-hidden="true">
+        <svg width="20" height="32" viewBox="0 0 20 32"><rect x="1" y="1" width="18" height="30" rx="9" stroke="currentColor" stroke-width="1.5" fill="none"/><circle class="hero__scroll-dot" cx="10" cy="10" r="3" fill="currentColor"/></svg>
+        <span>Scroll</span>
+      </div>
+    </section>
 
-  <!-- =============================================
-       INTRO PROSE
-  ============================================= -->
-  <section class="prose-section">
-    <div class="prose-section__inner">
-      <p class="prose-section__lead">
-        Over the last few years, prominent figures within football have become increasingly vocal 
-        in their complaints over the fixture schedule becoming more congested — and its effect
-        on players' fitness and long-term health.
-      </p>
-    </div>
-  </section>
+    <!-- =============================================
+         INTRO PROSE
+    ============================================= -->
+    <section class="prose-section">
+      <div class="prose-section__inner">
+        <p class="prose-section__lead">
+          Over the last few years, prominent figures within football have become increasingly vocal
+          in their complaints over the fixture schedule becoming more congested and its effect
+          on players' fitness and long-term health.
+        </p>
+      </div>
+    </section>
+  </div>
+  <!-- /centered-content (hero + intro) -->
 
   <!-- =============================================
        EVIDENCE — stacked fade-in headlines
@@ -91,30 +100,31 @@
   <!-- =============================================
        PIVOT QUESTION
   ============================================= -->
-  <section class="pivot-section">
-    <div class="pivot-section__inner">
-      <p class="pivot-section__question">But are these claims valid?</p>
-      <p class="pivot-section__sub">
-        Are players getting injured more often? And if so, is it because the fixture schedule is getting more congested?
-      </p>
-    </div>
-  </section>
+  <div class="centered-content">
+    <section class="pivot-section">
+      <div class="pivot-section__inner">
+        <p class="pivot-section__question">But are these claims valid?</p>
+        <p class="pivot-section__sub">
+          Are we actually seeing a meaningful increase in player injuries?
+          <br>Is the fixture schedule actually getting more congested?
+        </p>
+      </div>
+    </section>
+  </div>
 
   <!-- =============================================
        SCROLLYTELLING — Stadium / Injuries
        ─────────────────────────────────────────────
        Steps sequence (data attributes drive JS):
-       0  intro         → show stadium illustration
-       1  empty         → show empty tiered stadium structure
-       2  label-tiers   → label the 4 stands (seasons)
-       7–11             → season breakdown steps (data-season)
+         empty      → show empty tiered stadium structure
+         season-0–4 → season breakdown steps
   ============================================= -->
   <section class="scrolly scrolly--stadium" id="stadiumScrolly">
 
-        <!-- STICKY PANEL -->
+    <!-- STICKY PANEL -->
     <div class="sticky-visual" id="stadiumStickyVisual">
 
-      <!-- Tiered stadium container -->
+      <!-- Tiered stadium container (D3-rendered) -->
       <div id="stadium" role="img" aria-label="Tiered stadium visualisation showing injury absences by season and injury type"></div>
 
       <!-- Season label — fades in from season steps onward -->
@@ -141,25 +151,23 @@
       </div>
     </div>
 
-
     <!-- SCROLLING TEXT STEPS -->
     <div class="steps" id="stadiumSteps">
 
-    <!-- Step 0: Intro — now directly shows empty stadium -->
+      <!-- Step 0: Intro — show empty stadium -->
       <div class="step" data-step="empty">
         <div class="step__card">
-          <span class="step__label">Five Stands</span>
-          <p>Picture a stadium
-            .</p>
+          <span class="step__label">Setting the scene</span>
+          <p>Picture the inside of a football stadium.</p>
         </div>
       </div>
-
 
       <!-- Step 1: Empty stadium structure -->
       <div class="step" data-step="empty">
         <div class="step__card">
           <span class="step__label">The Stadium</span>
-          <p>This stadium is divided into <strong>five stands</strong>, each representing a season from 2020/21 to 2024/25. Each seat represents <strong>30 injury days</strong>, most of which were the result of soft tissue injuries every year.</p>
+          <p>This stadium is divided into <strong>five stands</strong>, representing each season from 2020/21 to 2024/25.
+            <br><br>Each seat represents <strong>100 days missed</strong> of a season through a soft-tissue injury in the top five European leagues.</p>
         </div>
       </div>
 
@@ -167,7 +175,7 @@
       <div class="step" data-step="season-0">
         <div class="step__card">
           <span class="step__label">2020/21</span>
-          <p><strong>This is the 2020/21 season</strong>. Across the top five leagues, soft-tissue injuries accounted for <strong>12,241 game days missed</strong> by players.</p>
+          <p>This is the <strong>2020/21</strong> season. <br><br>A total of <strong>12,241</strong> days were missed through injury.</p>
           <ul class="injury-list">
             <li class="injury-text" data-type="muscle">
               <span class="injury-list__type">Muscle</span>
@@ -193,7 +201,7 @@
       <div class="step" data-step="season-1">
         <div class="step__card">
           <span class="step__label">2021/22</span>
-          <p>This is the <strong>2021/22 season</strong>. This season, <strong>12,469 days</strong> were lost to soft tissue injury.</p>
+          <p>This is the <strong>2021/22 season</strong>. <br><br>A total of <strong>12,469</strong> days were missed through injury.</p>
           <ul class="injury-list">
             <li class="injury-text" data-type="muscle">
               <span class="injury-list__type">Muscle</span>
@@ -219,7 +227,7 @@
       <div class="step" data-step="season-2">
         <div class="step__card">
           <span class="step__label">2022/23</span>
-          <p><strong>2022/23 season</strong>.</p>
+          <p><strong>2022/23 season</strong>.<br><br>A total of <strong>12,364</strong> days were missed through injury.</p>
           <ul class="injury-list">
             <li class="injury-text" data-type="muscle">
               <span class="injury-list__type">Muscle</span>
@@ -245,7 +253,7 @@
       <div class="step" data-step="season-3">
         <div class="step__card">
           <span class="step__label">2023/24</span>
-          <p>In the <strong>2023/24 season</strong>, there were <strong>13,855 days</strong> lost to soft tissue injuries.</p>
+          <p>In the <strong>2023/24 season</strong>, a total of <strong>13,855</strong> days were missed through injury.</p>
           <ul class="injury-list">
             <li class="injury-text" data-type="muscle">
               <span class="injury-list__type">Muscle</span>
@@ -267,11 +275,12 @@
         </div>
       </div>
 
-      <!-- Step 6: Season 2024/25 — Stand 4 fills (top) -->
+      <!-- Step 6: Season 2024/25 — Stand 4 fills -->
       <div class="step" data-step="season-4">
         <div class="step__card">
           <span class="step__label">2024/25</span>
-          <p>Last season, <strong>2024/25</strong>, saw the highest number of days lost to soft tissue injuries in five years: <strong>14,663 days</strong>.</p>
+          <p>Last season, <strong>2024/25</strong>, saw the highest number of days lost to soft tissue injuries in five years.
+            <br><br>A total of <strong>14,663</strong> days were missed through injury.</p>
           <ul class="injury-list">
             <li class="injury-text" data-type="muscle">
               <span class="injury-list__type">Muscle</span>
@@ -299,13 +308,15 @@
   <!-- =============================================
        BRIDGE
   ============================================= -->
-  <section class="pivot-section pivot-section--dark">
-    <div class="pivot-section__inner">
-      <p class="pivot-section__question">
-        The number of injuries is definitely rising. But is the fixture schedule getting more congested alongside it?
-      </p>
-    </div>
-  </section>
+  <div class="centered-content">
+    <section class="pivot-section pivot-section--dark">
+      <div class="pivot-section__inner">
+        <p class="pivot-section__question">
+          The number of injuries is definitely rising. <br><br>But is the fixture schedule getting more congested too?
+        </p>
+      </div>
+    </section>
+  </div>
 
   <!-- =============================================
        SCROLLYTELLING — Congestion / Charts
@@ -339,38 +350,31 @@
         </iframe>
 
         <!-- MOBILE: Static image fallbacks (hidden on desktop via CSS) -->
-        <!-- Replace the src values below with your actual image filenames -->
-        <img id="chart-img1"
-          class="chart-img"
-          src="Images/test.png"
-          alt="Total matches played across top 5 leagues" />
-        <img id="chart-img2"
-          class="chart-img"
-          src="Images/test.png"
-          alt="Premier League fixture congestion over time" />
-        <img id="chart-img3"
-          class="chart-img"
-          src="Images/test.png"
-          alt="Why are injuries rising if fixtures are not?" />
+        <img id="chart-img1" class="chart-img" src="Images/test.png" alt="Total matches played across top 5 leagues" />
+        <img id="chart-img2" class="chart-img" src="Images/test.png" alt="Premier League fixture congestion over time" />
+        <img id="chart-img3" class="chart-img" src="Images/test.png" alt="Why are injuries rising if fixtures are not?" />
       </div>
     </div>
     <div class="steps">
       <div class="step" data-chart="1">
         <div class="step__card">
           <span class="step__label">Total Matches</span>
-          <p>The number of matches played across the top 5 leagues <strong>isn't actually increasing</strong>. The schedule, by raw count, hasn't actually become more congested.</p>
+          <p>The number of matches played across the top 5 European leagues <strong>isn't actually increasing</strong>.</p>
+          <p>These figures include matches played across <strong>all</strong> competitions by these teams.</p>
         </div>
       </div>
       <div class="step" data-chart="2">
         <div class="step__card">
           <span class="step__label">Fixture Congestion</span>
-          <p>We also looked at the number of congested matches, those played within four days of each other. We found no increase in this, either.</p>
+          <p>We also looked at the number of congested matches, specifically for Premier League teams, and found no increase in this either.
+            <br><br>The schedule, by raw count, <strong>hasn't</strong> actually become more congested on a club level.
+          </p>
         </div>
       </div>
       <div class="step" data-chart="3">
         <div class="step__card">
           <span class="step__label">The Real Question</span>
-          <p>So, is fixture congestion isn't increasing, then what <i>is</i> causing the increase in injury rates?</p>
+          <p>So, if fixture congestion isn't increasing, then what <i>is</i> causing the increase in injury rates?</p>
         </div>
       </div>
     </div>
@@ -378,45 +382,242 @@
 
   <!-- =============================================
        ALTERNATIVE FACTORS
+       ─────────────────────────────────────────────
+       The factors-section wrapper provides shared
+       horizontal padding for the intro heading.
+       Factor subsections sit as direct children so
+       their left edges align with the intro text.
   ============================================= -->
   <section class="factors-section">
-    <div class="factors-section__intro">
-      <span class="factors-section__eyebrow">Alternative Explanations</span>
-      <h2>It's not the calendar.</h2> <br> <h2>Where else does the problem lie?</h2>
-    </div>
-    <div class="factor-card factor-card--intensity">
-      <div class="factor-card__inner">
-        <div class="factor-card__text">
-          <span class="factor-card__number">01</span>
-          <h3>Match Intensity</h3>
-          <ul class="factor-list">
-            <li>Matches have become <strong>far more physically demanding</strong> over five seasons.</li>
-            <li>Players are covering <strong>more ground per 90 minutes</strong> than at any point in the data.</li>
-            <li>The number of <strong>sprints and high-intensity runs</strong> per match continues to rise.</li>
-            <li>Harder, faster football creates <strong>greater cumulative physiological stress</strong> — even with an identical fixture count.</li>
-          </ul>
-        </div>
-        <div class="factor-card__callout">
-          <span class="factor-card__big-number">↑12%</span>
-          <span class="factor-card__big-label">High-intensity runs<br>per 90 mins (5yr avg.)</span>
-        </div>
+
+    <!-- Section header — centred like pivot/prose sections -->
+    <div class="centered-content">
+      <div class="factors-section__intro">
+        <span class="factors-section__eyebrow">Alternative Explanations</span>
+        <h2>It's not the calendar.</h2>
+        <br>
+        <h2 id="WEDTPL">So what is it?</h2>
       </div>
     </div>
+
+    <!-- =============================================
+         FACTOR 01 — Match Intensity (scrollytelling)
+         Sticky bar chart on left, steps on right.
+         Sits at full viewport width so it can own the
+         full horizontal space, matching the factor-cards.
+    ============================================= -->
+    <section class="scrolly scrolly--intensity" id="intensityScrolly" aria-label="Match Intensity statistics">
+
+      <!-- STICKY LEFT PANEL -->
+      <div class="sticky-visual--intensity" id="intensityStickyPanel">
+        <div class="intensity-intro-block">
+          <span class="factor-card__number">01</span>
+          <h3>Match Intensity</h3>
+        </div>
+
+        <div class="intensity-chart" id="intensityChart">
+          <div class="intensity-chart__title">Increase between 2015/16 and 2024/25 seasons</div>
+
+          <!-- Bar rows — hidden initially, revealed by scroll -->
+          <div class="intensity-bar-row" id="ibar-0">
+            <div class="intensity-bar-row__label">Sprinting distance</div>
+            <div class="intensity-bar-row__track">
+              <div class="intensity-bar-row__fill intensity-bar-row__fill--sprints-dist" data-target="40"></div>
+              <span class="intensity-bar-row__value">+40%</span>
+            </div>
+          </div>
+
+          <div class="intensity-bar-row" id="ibar-1">
+            <div class="intensity-bar-row__label">Weekly sprints per player</div>
+            <div class="intensity-bar-row__track">
+              <div class="intensity-bar-row__fill intensity-bar-row__fill--sprints-week" data-target="50"></div>
+              <span class="intensity-bar-row__value">+50%</span>
+            </div>
+          </div>
+
+          <div class="intensity-bar-row" id="ibar-2">
+            <div class="intensity-bar-row__label">High-speed running</div>
+            <div class="intensity-bar-row__track">
+              <div class="intensity-bar-row__fill intensity-bar-row__fill--hsr" data-target="23"></div>
+              <span class="intensity-bar-row__value">+23%</span>
+            </div>
+          </div>
+
+          <div class="intensity-bar-row" id="ibar-3">
+            <div class="intensity-bar-row__label">High-intensity distance</div>
+            <div class="intensity-bar-row__track">
+              <div class="intensity-bar-row__fill intensity-bar-row__fill--hid" data-target="27"></div>
+              <span class="intensity-bar-row__value">+27%</span>
+            </div>
+          </div>
+
+          <div class="intensity-chart__divider" id="intensityDivider"></div>
+          <div class="intensity-chart__title" id="intensityDividerLabel">Increase since 2023/24 season</div>
+
+          <div class="intensity-bar-row" id="ibar-4">
+            <div class="intensity-bar-row__label">Actual minutes played per match</div>
+            <div class="intensity-bar-row__track">
+              <div class="intensity-bar-row__fill intensity-bar-row__fill--minutes" data-target="13"></div>
+              <span class="intensity-bar-row__value">+13%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCROLLING STEPS (right column) -->
+      <div class="steps steps--intensity" id="intensitySteps">
+
+        <!-- Step 0: Intro — chart is empty -->
+        <div class="step" data-intensity-step="intro">
+          <div class="step__card">
+            <span class="step__label">The Intensity Problem</span>
+            <p>While the physical demands of elite-level football have always increased year-on-year,
+            the past decade has seen a particularly significant rise.<br><br>The number of matches may not have changed, but what happens inside those matches has shifted dramatically.</p>
+            <p>Recent tactical shifts towards a 'high press' mean players cover more ground at higher speeds.</p>
+          </div>
+        </div>
+
+        <!-- Step 1: Sprinting distance -->
+        <div class="step" data-intensity-step="0">
+          <div class="step__card">
+            <span class="step__label">Running Further, Faster</span>
+            <div class="intensity-highlight intensity-highlight--0" id="ihighlight-0">
+              <span class="intensity-highlight__number">+40%</span>
+              <span class="intensity-highlight__label">increase in sprinting distance</span>
+            </div>
+            <p><br>Players are covering significantly more ground while sprinting every match.</p>
+          </div>
+        </div>
+
+        <!-- Step 2: Weekly sprints -->
+        <div class="step" data-intensity-step="1">
+          <div class="step__card">
+            <span class="step__label">Sprint Frequency</span>
+            <div class="intensity-highlight intensity-highlight--1" id="ihighlight-1">
+              <span class="intensity-highlight__number">+50%</span>
+              <span class="intensity-highlight__label">more weekly sprints per player</span>
+            </div>
+            <p><br>It's not just distance, the <em>number</em> of explosive efforts.
+              <br><br>Each individual sprint places physical stress on players' bodies and increases the likelihood of soft-tissue injuries.</p>
+          </div>
+        </div>
+
+        <!-- Step 3: HSR -->
+        <div class="step" data-intensity-step="2">
+          <div class="step__card">
+            <span class="step__label">High-Speed Running</span>
+            <div class="intensity-highlight intensity-highlight--2" id="ihighlight-2">
+              <span class="intensity-highlight__number">+23%</span>
+              <span class="intensity-highlight__label">increase in high-speed running distance</span>
+              <span class="intensity-highlight__label">(distance covered between 5.5m/s - 7m/s)</span>
+            </div>
+            <p><br>It's not just sprints that are increasing. The amount of running done at the threshold below is also seeing a marked increase.</p>
+          </div>
+        </div>
+
+        <!-- Step 4: High-intensity distance -->
+        <div class="step" data-intensity-step="3">
+          <div class="step__card">
+            <span class="step__label">Total High-Intensity Load</span>
+            <div class="intensity-highlight intensity-highlight--3" id="ihighlight-3">
+              <span class="intensity-highlight__number">+27%</span>
+              <span class="intensity-highlight__label">increase in high-intensity distance covered</span>
+              <span class="intensity-highlight__label">(distance covered above 5.5m/s)</span>
+            </div>
+            <p><br>Combining sprints and high-speed running, the total distance covered by player has risen by more than a quarter.</p>
+          </div>
+        </div>
+
+        <!-- Step 5: Match minutes -->
+        <div class="step" data-intensity-step="4">
+          <div class="step__card">
+            <span class="step__label">Longer Games Too</span>
+            <div class="intensity-highlight intensity-highlight--4" id="ihighlight-4">
+              <span class="intensity-highlight__number">+13%</span>
+              <span class="intensity-highlight__label">increase in actual minutes played per match</span>
+            </div>
+            <p><br>New stoppage-time rules introduced mean matches are lasting around 5 minutes longer on average.</p>
+          </div>
+        </div>
+
+      </div>
+      <!-- /steps--intensity -->
+
+    </section>
+    <!-- /Factor 01 scrolly -->
+
+    <!--
+      Match Intensity conclusion — same layout as the Travel and Media Scrutiny
+      factor-cards: prose text on the left, stat callout boxes on the right.
+      Uses .factor-card--intensity-conclusion for the page-coloured background
+      (no green), and .factor-card__inner--stacked-callouts so the three callout
+      boxes stack vertically in the right column.
+    -->
+    <div class="factor-card factor-card--intensity-conclusion">
+      <div class="factor-card__inner factor-card__inner--stacked-callouts">
+
+        <!-- LEFT: narrative prose -->
+        <div class="factor-card__text">
+          <p>These trends point to a clear conclusion: even if fixture numbers haven’t increased, the physical cost of each match has. Players are sprinting more often and for longer, with no extra recovery time. The result is constant high-intensity strain, reflected in rising injury rates.</p>
+
+          <p>NHS physiotherapists Martin Chau and Harry Payne link this directly to more soft-tissue injuries, especially muscular ones driven by cumulative load and limited recovery. As Payne put it, “it’s more muscle fatigue and reduced recovery time increasing those injury chances.”</p>
+
+          <p>“Players are going into fixtures still with DOMS (Delayed Onset Muscle Soreness) … with muscles that haven’t fully recovered from the previous game,” he added.</p>
+
+          <p>Hamstring injuries stand out as the clearest indicator of increased intensity, as both Chau and Payne testified. Essential for sprinting and explosive movement, they’ve risen by 62% over five seasons. “It’s always hamstrings,” said Chau, noting they make up “more than half of the muscular injuries in sports.”</p>
+
+          <p>Payne added that prevention is difficult: “One of the key reasons is that it’s quite difficult to train your hamstrings to prevent that kind of thing. What you see in a lot of players have got really big, strong hamstrings, but the moment they try and sprint, is when it goes. And that’s a really tricky thing to prevent in players or train against.”</p>
+
+          <p>Recovery time remains the key issue. Chau emphasised the importance of the recovery window and how it links to increasing physical load: “it takes up to 72 hours for muscles to fully recover after a high intensity match. If there is an increase in match intensity, that recovery time is going to be a little bit longer.”</p>
+
+          <p>As for solutions, increasing recovery time is the most obvious fix but this would require prolonging the season and players have already voiced concerns over the lack of time off they receive. Payne pointed out the global shift from three to five substitutes as a positive step in managing load, and also suggested that eliminating non-essential matches like FA Cup replays has helped to offset the load of congested fixture windows.</p>
+        </div>
+
+        <!-- RIGHT: three stacked stat callout boxes -->
+        <div class="factor-card__callout-stack">
+
+          <!-- Stat 1: hamstring injury rise -->
+          <div class="factor-card__callout">
+            <span class="factor-card__big-number">+62%</span>
+            <span class="factor-card__big-label">increase in hamstring injuries</span>
+          </div>
+
+          <!-- Stat 2: hamstrings share of muscular injuries -->
+          <div class="factor-card__callout">
+            <span class="factor-card__big-number">&gt;50%</span>
+            <span class="factor-card__big-label">of muscular injuries in sports are hamstring injuries</span>
+          </div>
+
+          <!-- Stat 3: muscle recovery window -->
+          <div class="factor-card__callout">
+            <span class="factor-card__big-number">72hrs</span>
+            <span class="factor-card__big-label">needed for muscles to fully<br>recover after a high-intensity match</em></span>
+          </div>
+
+        </div>
+        <!-- /factor-card__callout-stack -->
+
+      </div>
+    </div>
+
+        <!-- =============================================
+         FACTOR 02 — Travel
+    ============================================= -->
     <div class="factor-card factor-card--travel">
       <div class="factor-card__inner">
         <div class="factor-card__text">
           <span class="factor-card__number">02</span>
           <h3>Travel</h3>
-          <p> Playing for elite teams requires significant international travel. This year’s World Cup spans three countries and four main time zones. According to the BBC, the sixteen host cities are up to 2,800 miles apart. For players, this means more distance travelled and time spent travelling between matches.<br>
-              Jonathan Hughes, a sport scientist from Cardiff Metropolitan University, says this travel may lead to increased injuries. <br>
-              “QUOTE”<br>
-              Jetlag is the effect that crossing time zones at high speed has on the body. According to researchers from the University of Gloucester and Birmingham City University, jet lag can take many forms, including fatigue, irritability, digestive issues, and loss of appetite.<br> 
-              Research has linked jetlag to increased fatigue and soreness among players, which may increase injury likelihood. <br>
-              Hughes has researched the effect of travel and jetlag on Premier League Players. “EXPLAINER QUOTE”/ The research split players, including Premier League players, into two groups: those who were injured and those who weren’t. As a group, injured players experienced more international travel over more hours and time zones and across further differences. <br>
-              “QUOTE ABOUT DANGER” <br>
-              With the World Cup fast approaching, players will be expected to travel long distances to attend the tournament. What can be done to lessen the impact of this travel on their performance? <br>
-              According to Hughes, it’s all in SOMETHING. <br>
-              “QUOTE ABOUT HOW TO LESSEN THE IMPACT OF TRAVEL ON INJURY”.
+          <p>Playing for elite teams requires significant international travel. This year's World Cup spans three countries and four main time zones. According to the BBC, the sixteen host cities are up to 2,800 miles apart. For players, this means more distance travelled and time spent travelling between matches.<br><br>
+            Jonathan Hughes, a sport scientist from Cardiff Metropolitan University, says this travel may lead to increased injuries.<br>
+            "QUOTE"<br><br>
+            Jetlag is the effect that crossing time zones at high speed has on the body. According to researchers from the University of Gloucester and Birmingham City University, jet lag can take many forms, including fatigue, irritability, digestive issues, and loss of appetite.<br><br>
+            Research has linked jetlag to increased fatigue and soreness among players, which may increase injury likelihood.<br><br>
+            Hughes has researched the effect of travel and jetlag on Premier League Players. "EXPLAINER QUOTE" The research split players, including Premier League players, into two groups: those who were injured and those who weren't. As a group, injured players experienced more international travel over more hours and time zones and across further differences.<br>
+            "QUOTE ABOUT DANGER"<br><br>
+            With the World Cup fast approaching, players will be expected to travel long distances to attend the tournament. What can be done to lessen the impact of this travel on their performance?<br><br>
+            According to Hughes, it's all in SOMETHING.<br>
+            "QUOTE ABOUT HOW TO LESSEN THE IMPACT OF TRAVEL ON INJURY".
           </p>
         </div>
         <div class="factor-card__callout">
@@ -425,16 +626,20 @@
         </div>
       </div>
     </div>
+
+    <!-- =============================================
+         FACTOR 03 — Media Scrutiny
+    ============================================= -->
     <div class="factor-card factor-card--media_scrutiny">
       <div class="factor-card__inner">
         <div class="factor-card__text">
           <span class="factor-card__number">03</span>
           <h3>Media Scrutiny</h3>
-          <p> Psychological stressors are known to increase injury rates in elite athletes, including professional footballers. But research is just beginning to explore a new kind of psychological stressor: social media scrutiny. <br>
-          Footballers have long been the subject of intense media attention, but the rise of social media has caused this to skyrocket. In a 2023 review, Assistant Professor Ranjith Kamal of India’s Government College of Physical Education suggested that “Players exposed to high volume negative social media commentary show 32-45% greater anxiety symptoms following matches”, a stressor which may, in turn, increase injury susceptibility. <br>
-          With increased media attention comes increased scrutiny and hate. Last season, charity Kick It Out reported 621 online instances of discrimination, and according to the Observer, instances of football-related online abuse more than doubled between 2023-24 and 2024-25 seasons. <br>
-          The problem is so prevalent that the Premier League have developed a specialist unit tasked with finding the sources of online abuse. Since 2020, the league have investigated over 3000 cases of online abuse and discrimination. In February of this year (FIND MORE RECENT EXAMPLES LATER ON), this resulted in police investigations into the online racial abuse of four Premier League players: Wolverhampton’s Tolu Arokodare, Sunderland’s Romaine Mundle, Chelsea’ Wesley Fofana and Burnley’s Hannibal Meibri. <br>
-          SOMEONE from SOMEWHERE thinks these instances of online abuse might impact injury rates: “QUOTE”.
+          <p>Psychological stressors are known to increase injury rates in elite athletes, including professional footballers. But research is just beginning to explore a new kind of psychological stressor: social media scrutiny.<br><br>
+            Footballers have long been the subject of intense media attention, but the rise of social media has caused this to skyrocket. In a 2023 review, Assistant Professor Ranjith Kamal of India's Government College of Physical Education suggested that "Players exposed to high volume negative social media commentary show 32-45% greater anxiety symptoms following matches", a stressor which may, in turn, increase injury susceptibility.<br><br>
+            With increased media attention comes increased scrutiny and hate. Last season, charity Kick It Out reported 621 online instances of discrimination, and according to the Observer, instances of football-related online abuse more than doubled between 2023-24 and 2024-25 seasons.<br><br>
+            The problem is so prevalent that the Premier League have developed a specialist unit tasked with finding the sources of online abuse. Since 2020, the league have investigated over 3000 cases of online abuse and discrimination. In February of this year, this resulted in police investigations into the online racial abuse of four Premier League players: Wolverhampton's Tolu Arokodare, Sunderland's Romaine Mundle, Chelsea's Wesley Fofana and Burnley's Hannibal Meibri.<br>
+            SOMEONE from SOMEWHERE thinks these instances of online abuse might impact injury rates: "QUOTE".
           </p>
         </div>
         <div class="factor-card__callout">
@@ -443,17 +648,15 @@
         </div>
       </div>
     </div>
+
   </section>
+  <!-- /factors-section -->
 
   <!-- =============================================
        METHODOLOGY / LEARN MORE
   ============================================= -->
   <section class="methodology-section">
     <div class="methodology-section__inner">
-      <p class="methodology-section__note">
-        Injury data sourced from the CIES Football Observatory and Transfermarkt, covering five seasons 
-        (2020/21–2024/25) across the Premier League, Bundesliga, La Liga, Serie A, and Ligue 1.
-      </p>
       <button class="learn-more-btn" id="learnMoreBtn" aria-expanded="false" aria-controls="methodologyPanel">
         <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" class="learn-more-btn__icon learn-more-btn__icon--plus"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" class="learn-more-btn__icon learn-more-btn__icon--minus" hidden><path d="M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -462,7 +665,13 @@
       <div class="methodology-panel" id="methodologyPanel" hidden>
         <div class="methodology-panel__inner">
           <h3>Data &amp; Methodology</h3>
-          <p> INSERT ACCURATE EXPLANATION HERE </p>
+          <p>Injury data was collected by Sanan Muzaffarov and publicly available on Kaggle.com: https://www.kaggle.com/datasets/sananmuzaffarov/european-football-injuries-2020-2025.
+            <br><br>We analysed the data by categorising injury types into broad categories and summing the number of injuries in each category.
+            <br><br>Congestion data was collected manually.
+            <br><br>We found the date of each Premier League match over the past five years on Excel4Soccer: https://www.excel4soccer.com/. We then summed the number of times two games happened within four days of each other for each team and compared these totals across seasons.
+            <br><br>We also manually collected the number of matches played by each Premier League team across the same five seasons using data from Transfermarkt: https://www.transfermarkt.co.uk/. We added the number of games played each season across all teams.
+            <br><br>Figures for match intensity were sourced from: https://knowledge.lancashire.ac.uk/id/eprint/57797/9/57797%20Allen%20et%20al.%20VOR.pdf
+            <br><br>AI, including Claude AI and ChatGPT, was used to assist in the programming and the design of this website. All copy was written without the assistance of AI.</p>
         </div>
       </div>
     </div>
@@ -474,10 +683,12 @@
   <footer class="site-footer">
     <div class="site-footer__inner">
       <p>© 2026 William McNamee &amp; Megan Moreland</p>
-      <p>Data: Transfermarkt · Excel4Soccer · </p>
+      <p>Data: Kaggle · Transfermarkt · Excel4Soccer </p>
     </div>
   </footer>
 
+  <!-- ── All JavaScript in external file (no inline scripts) ───────────── -->
   <script src="script.js"></script>
+
 </body>
 </html>

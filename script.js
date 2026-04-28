@@ -1,20 +1,20 @@
 /* =============================================
-   FOOTBALL INJURY SCROLLYTELLING
-   script.js — One Stand Per Season Edition
+   script.js
+   Football's Congestion Charge — Digital Investigation
 
-   Architecture:
-   ─────────────
-   1.  Constants & Config
-   2.  Stand geometry — generateStandSeats()
-   3.  Data mapping — mapSeasonToDots()
-   4.  Stadium SVG background — drawStadiumBackground()
-   5.  D3 init & seat rendering
-   6.  Narrative step handlers
-   7.  Stadium Scrollama
-   8.  Headline Evidence Scrollama
-   9.  Congestion Chart Scrollama
-   10. Learn More panel
-   11. Resize handler + mobile helpers
+   Contents (in order):
+     1.  Constants & Config
+     2.  Stand geometry        — generateStandSeats()
+     3.  Data mapping          — mapSeasonToDots()
+     4.  Stadium SVG background — drawStadiumBackground()
+     5.  D3 init & seat rendering
+     6.  Narrative step handlers
+     7.  Stadium Scrollama
+     8.  Headline Evidence Scrollama
+     9.  Congestion Chart Scrollama
+    10.  Match Intensity Scrollama  ← moved from inline <script> in index.html
+    11.  Learn More panel
+    12.  Resize handler + mobile helpers
 
    Season layout (bottom = earliest, top = latest):
      Stand 0 (bottom) → 2020/21
@@ -23,6 +23,7 @@
      Stand 3           → 2023/24
      Stand 4 (top)     → 2024/25
    ============================================= */
+
 
 /* =============================================
    1. CONSTANTS & CONFIG
@@ -47,6 +48,7 @@ const SEASONS = [
 
 const N_STANDS = SEASONS.length;
 
+/* Stadium geometry tuning constants */
 const CFG = {
   GAP_FRAC:        0.30,
   TRAPEZOID_TAPER: 0.04,
@@ -61,6 +63,7 @@ const CFG = {
 
 const SEAT_EMPTY_FILL = 'rgba(255,255,255,0.08)';
 
+
 /* =============================================
    2. STAND GEOMETRY
    ─────────────────────────────────────────────
@@ -71,7 +74,6 @@ function generateStandSeats(standIndex, W, H) {
   const r    = Math.max(CFG.DOT_R_MIN, Math.min(CFG.DOT_R_MAX, W * CFG.DOT_R_FRAC));
   const cell = r * 2 * (1 + CFG.GAP_FRAC);
 
-  /* Invert so stand 0 draws at the bottom */
   const svgBandIndex = standIndex;
 
   const bandH   = H / N_STANDS;
@@ -122,6 +124,7 @@ function generateStandSeats(standIndex, W, H) {
   return seats;
 }
 
+
 /* =============================================
    3. DATA MAPPING
    ─────────────────────────────────────────────
@@ -148,45 +151,43 @@ function mapSeasonToDots(season, standSeats) {
     }
   }
 
-  /* Cumulative boundaries */
+  /* Cumulative index boundaries for each injury type */
   const boundaries = [0];
   dotCounts.forEach(c => boundaries.push(boundaries[boundaries.length - 1] + c));
 
   const fillMap = new Map();
   standSeats.forEach((seat, idx) => {
     let fill   = SEAT_EMPTY_FILL;
-    let active = false;
     for (let ti = 0; ti < TYPE_ORDER.length; ti++) {
       if (idx >= boundaries[ti] && idx < boundaries[ti + 1]) {
-        fill   = INJURY_COLORS[TYPE_ORDER[ti]];
-        active = true;
+        fill = INJURY_COLORS[TYPE_ORDER[ti]];
         break;
       }
     }
-    fillMap.set(seat.id, { fill, active });
+    fillMap.set(seat.id, { fill, active: fill !== SEAT_EMPTY_FILL });
   });
 
   return fillMap;
 }
+
 
 /* =============================================
    4. STADIUM SVG BACKGROUND
    ============================================= */
 
 function drawStadiumBackground(svgSel, W, H) {
-  // Remove any previous background layer
+  // Remove any previous background layer to avoid duplication on resize
   svgSel.select('g.bg-layer').remove();
 
-  // Insert a new, simple pale background
   const bg = svgSel.insert('g', ':first-child').attr('class', 'bg-layer');
 
-  // Pale background behind everything
+  // Page-coloured base rect
   bg.append('rect')
     .attr('width', W)
     .attr('height', H)
-    .attr('fill', '#fffbe8'); // your page background
+    .attr('fill', '#fffbe8');
 
-  // Draw light-grey trapezoids for each stand
+  // Light-grey trapezoid per stand to suggest physical stand structure
   const r    = Math.max(CFG.DOT_R_MIN, Math.min(CFG.DOT_R_MAX, W * CFG.DOT_R_FRAC));
   const cell = r * 2 * (1 + CFG.GAP_FRAC);
   const padH = W * CFG.STAND_PAD_H;
@@ -219,13 +220,30 @@ function drawStadiumBackground(svgSel, W, H) {
 
     bg.append('path')
       .attr('d', trapPath)
-      .attr('fill', '#e6e6e6')   // ← fixed light grey
+      .attr('fill', '#e6e6e6')
       .attr('stroke', 'rgba(0,0,0,0.12)')
       .attr('stroke-width', 1)
       .attr('class', `stand-bg stand-bg-${si}`)
-      .style('opacity', 1);      // animation still works
+      .style('opacity', 1);
+
+    // Season label text on left edge of each stand
+    const labelY = (bandTop + bandBot) / 2;
+    const labelGroup = labelsLayer
+      .append('g')
+      .attr('class', 'stand-label-g')
+      .attr('data-stand', si)
+      .style('opacity', 0);
+
+    labelGroup.append('text')
+      .attr('class', 'tier-label-text')
+      .attr('x', padH + 4)
+      .attr('y', labelY)
+      .attr('dominant-baseline', 'middle')
+      .attr('fill', 'rgba(0,0,0,0.35)')
+      .text(SEASONS[si] ? SEASONS[si].label : '');
   }
 }
+
 
 /* =============================================
    5. D3 INIT & SEAT RENDERING
@@ -238,34 +256,37 @@ const seasonLabelEl = document.getElementById('seasonLabel');
 let W = 0, H = 0;
 let allStandSeats = [];
 
+/* Create SVG layers once; they persist across re-inits */
 const svg         = d3.select('#stadium').append('svg').attr('width', '100%').attr('height', '100%');
 const dotsLayer   = svg.append('g').attr('class', 'dots-layer');
 const labelsLayer = svg.append('g').attr('class', 'stand-labels-layer');
 
+/** Returns true when viewport width is in the mobile range */
 function isMobile()    { return window.innerWidth <= 900; }
+
+/** Scrollama step offset — lower on desktop to trigger earlier in viewport */
 function getStepOffset() { return isMobile() ? 0.72 : 0.5; }
 
+/** Guard: re-init stadium if dimensions haven't been set yet */
 function ensureStadiumReady() {
   const rect = stadiumEl.getBoundingClientRect();
   if (rect.height < 20 || rect.width < 20 || allStandSeats.length === 0) initStadium();
 }
 
+/** Measure container, generate seat positions and paint empty dots */
 function initStadium() {
   const rect = stadiumEl.getBoundingClientRect();
   W = rect.width  || 560;
   H = rect.height || 420;
 
-  /* Guard: if dimensions are still zero (e.g. element not yet laid out),
-     bail out — the ResizeObserver will call us again once it has real size. */
+  /* Bail if element hasn't been laid out yet; ResizeObserver retries */
   if (W < 10 || H < 10) return;
 
   allStandSeats = SEASONS.map((_, si) => generateStandSeats(si, W, H));
 
   drawStadiumBackground(svg, W, H);
 
-  /* Paint all seats empty instantly.
-     Do NOT add .active here — visibility is controlled by handleStep()
-     so the stadium only appears when the user has scrolled to it. */
+  /* Paint all seats empty — visibility controlled by handleStep() */
   allStandSeats.forEach(seats => {
     const emptyMap = new Map();
     seats.forEach(s => emptyMap.set(s.id, { fill: SEAT_EMPTY_FILL, active: false }));
@@ -273,7 +294,7 @@ function initStadium() {
   });
 }
 
-/* ---- renderSeats — keyed enter/update/exit for one stand ---- */
+/** Keyed D3 enter/update/exit for one stand's seats */
 function renderSeats(seats, fillMap, opts = {}) {
   if (!seats || seats.length === 0) return;
   const { staggerDelay = 0.4, duration = 400 } = opts;
@@ -310,10 +331,10 @@ function renderSeats(seats, fillMap, opts = {}) {
   join.exit().transition().duration(150).attr('r', 0).attr('opacity', 0).remove();
 }
 
-/* ---- Track last revealed state for resize re-application ---- */
+/** Tracks the last-revealed stand index so resize can repaint correctly */
 let _lastRevealedIndex = -1;
 
-/* ---- Reveal stands 0…upToIndex, empty the rest ---- */
+/** Reveal stands 0…upToIndex, empty the rest */
 function revealSeasonsUpTo(upToIndex, opts = {}) {
   _lastRevealedIndex = upToIndex;
 
@@ -322,7 +343,6 @@ function revealSeasonsUpTo(upToIndex, opts = {}) {
     if (!seats) continue;
 
     const alreadyRevealed = si < upToIndex;
-    const isNew           = si === upToIndex;
     const isHidden        = si > upToIndex;
 
     if (!isHidden) {
@@ -343,7 +363,7 @@ function revealSeasonsUpTo(upToIndex, opts = {}) {
   }
 }
 
-/* ---- Show all stands empty (structural overview) ---- */
+/** Show the structural stadium overview with all stands empty */
 function showEmptyStadium() {
   _lastRevealedIndex = -1;
   for (let si = 0; si < N_STANDS; si++) {
@@ -363,6 +383,7 @@ function setSeasonLabel(text) {
   seasonLabelEl.classList.add('active');
 }
 
+/** Apply injury-type colours to list items inside a step card */
 function colorInjuryText(el) {
   if (!el) return;
   el.querySelectorAll('.injury-text').forEach(item => {
@@ -370,28 +391,29 @@ function colorInjuryText(el) {
     if (INJURY_COLORS[t]) item.style.color = INJURY_COLORS[t];
   });
 }
+
+/** Reset injury-type colours when scrolling back up */
 function resetInjuryText(el) {
   if (!el) return;
   el.querySelectorAll('.injury-text').forEach(item => { item.style.color = ''; });
 }
 
+
 /* =============================================
    6. NARRATIVE STEP HANDLERS
    ─────────────────────────────────────────────
    data-step values used in HTML:
-     "intro"      → show photograph
-     "empty"      → empty stadium structure
-     "season-0"   → reveal stand 0 (2020/21)
-     "season-1"   → reveal stands 0–1
-     "season-2"   → reveal stands 0–2
-     "season-3"   → reveal stands 0–3
-     "season-4"   → reveal stands 0–4
+     "empty"    → empty stadium structure
+     "season-0" → reveal stand 0 (2020/21)
+     "season-1" → reveal stands 0–1
+     "season-2" → reveal stands 0–2
+     "season-3" → reveal stands 0–3
+     "season-4" → reveal stands 0–4
    ============================================= */
 
 function handleStep(element) {
   const step = element.dataset.step;
 
-  // Empty structural view
   if (step === 'empty') {
     ensureStadiumReady();
     stadiumEl.classList.add('active');
@@ -401,7 +423,6 @@ function handleStep(element) {
     return;
   }
 
-  // Season stands: reveal cumulatively
   if (step && step.startsWith('season-')) {
     const seasonIdx = parseInt(step.replace('season-', ''), 10);
     if (isNaN(seasonIdx)) return;
@@ -419,26 +440,27 @@ function handleStep(element) {
    7. STADIUM SCROLLAMA
    ============================================= */
 
-/* Initialise the stadium as soon as the DOM is interactive.
-   On mobile the sticky panel is sized by CSS before this fires,
-   so getBoundingClientRect() will return real dimensions. */
+/* Initialise stadium as soon as DOM is interactive */
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => initStadium());
 } else {
   initStadium();
 }
 
-/* Also re-init after all resources (fonts, images) have loaded — this
-   handles the edge case where a font reflow changes the container size. */
+/* Re-init after all resources load — handles font-reflow size changes */
 window.addEventListener('load', () => {
   initStadium();
   stadiumScroller.resize();
 });
 
 const stadiumScroller = scrollama();
-stadiumScroller.setup({ step: '#stadiumScrolly .step', offset: getStepOffset() })
+stadiumScroller
+  .setup({ step: '#stadiumScrolly .step', offset: getStepOffset() })
   .onStepEnter(({ element }) => { handleStep(element); })
-  .onStepExit(({ element, direction }) => { if (direction === 'up') resetInjuryText(element); });
+  .onStepExit(({ element, direction }) => {
+    if (direction === 'up') resetInjuryText(element);
+  });
+
 
 /* =============================================
    8. HEADLINE EVIDENCE SCROLLAMA
@@ -447,7 +469,8 @@ stadiumScroller.setup({ step: '#stadiumScrolly .step', offset: getStepOffset() }
 const headlineCards = Array.from(document.querySelectorAll('.headline-card'));
 
 const headlineScroller = scrollama();
-headlineScroller.setup({ step: '.headline-step', offset: isMobile() ? 0.65 : 0.55 })
+headlineScroller
+  .setup({ step: '.headline-step', offset: isMobile() ? 0.65 : 0.55 })
   .onStepEnter(({ element }) => {
     const idx = parseInt(element.dataset.headline, 10);
     if (isNaN(idx)) return;
@@ -466,26 +489,150 @@ headlineScroller.setup({ step: '.headline-step', offset: isMobile() ? 0.65 : 0.5
     });
   });
 
+
 /* =============================================
    9. CONGESTION CHART SCROLLAMA
    ============================================= */
 
 const congestionScroller = scrollama();
-congestionScroller.setup({ step: '.congestion-scrolly .step', offset: isMobile() ? 0.65 : 0.55, debug: false })
+congestionScroller
+  .setup({ step: '.congestion-scrolly .step', offset: isMobile() ? 0.65 : 0.55, debug: false })
   .onStepEnter(({ element }) => {
     const n = element.dataset.chart;
-    /* Deactivate all iframes and images */
+    // Deactivate all iframes and image fallbacks
     document.querySelectorAll('.congestion-scrolly .chart-iframe').forEach(f => f.classList.remove('active'));
     document.querySelectorAll('.congestion-scrolly .chart-img').forEach(f => f.classList.remove('active'));
-    /* Activate the matching iframe (desktop) or image (mobile) */
+    // Activate the matching iframe (desktop) or image (mobile)
     const iframe = document.getElementById('chart' + n);
     if (iframe) iframe.classList.add('active');
     const img = document.getElementById('chart-img' + n);
     if (img) img.classList.add('active');
   });
 
+
 /* =============================================
-   10. LEARN MORE PANEL
+   10. MATCH INTENSITY SCROLLAMA
+   ─────────────────────────────────────────────
+   Previously inline in index.html as a <script>
+   block; moved here so all JavaScript is in one
+   file.
+   ============================================= */
+
+(function initIntensityScrolly() {
+
+  /**
+   * Step config indexed by scroll position.
+   * Each entry defines which bars (0–4) should be
+   * visible and whether the divider line should show.
+   */
+  const INTENSITY_STEPS = [
+  { bars: [],              divider: false, title: false },
+  { bars: [0],             divider: false, title: true  }, 
+  { bars: [0, 1],          divider: false, title: true  },
+  { bars: [0, 1, 2],       divider: false, title: true  },
+  { bars: [0, 1, 2, 3],    divider: false, title: true  },
+  { bars: [0, 1, 2, 3, 4], divider: true,  title: true  },
+];
+
+  /**
+   * Convert a step element's data-intensity-step attribute
+   * to a numeric index into INTENSITY_STEPS.
+   * 'intro' → 0, '0' → 1, '1' → 2, etc.
+   */
+  function getStepIndex(el) {
+    const v = el.dataset.intensityStep;
+    if (v === 'intro') return 0;
+    return parseInt(v, 10) + 1;
+  }
+
+  /** Update the bar chart to match the given step config */
+  function applyIntensityStep(stepIndex) {
+    const cfg = INTENSITY_STEPS[Math.min(stepIndex, INTENSITY_STEPS.length - 1)];
+
+    // Show/hide individual bar rows
+    for (let i = 0; i < 5; i++) {
+      const row = document.getElementById('ibar-' + i);
+      if (!row) continue;
+
+      const shouldShow = cfg.bars.includes(i);
+
+      if (shouldShow && !row.classList.contains('visible')) {
+        row.classList.add('visible');
+
+        // Animate the fill bar width proportionally within a 8–92% display range
+        const fill = row.querySelector('.intensity-bar-row__fill');
+        if (fill) {
+          const target  = parseFloat(fill.dataset.target);
+          const minStat = 0,  maxStat = 55;
+          const minBar  = 8,  maxBar  = 92;
+          const pct = minBar + ((target - minStat) / (maxStat - minStat)) * (maxBar - minBar);
+          requestAnimationFrame(() => {
+            fill.style.width = pct + '%';
+          });
+        }
+      } else if (!shouldShow) {
+        row.classList.remove('visible');
+        const fill = row.querySelector('.intensity-bar-row__fill');
+        if (fill) fill.style.width = '0%';
+      }
+    }
+
+    // Show/hide the divider line and its label
+    const divider      = document.getElementById('intensityDivider');
+    const dividerLabel = document.getElementById('intensityDividerLabel');
+    if (divider)      divider.classList.toggle('visible',      cfg.divider);
+    if (dividerLabel) dividerLabel.classList.toggle('visible', cfg.divider);
+
+    // Highlight only the most-recently-revealed bar's stat card
+    document.querySelectorAll('.intensity-highlight').forEach((el, i) => {
+      el.classList.toggle('active', cfg.bars.includes(i) && i === cfg.bars[cfg.bars.length - 1]);
+    });
+
+    const title = document.querySelector('.intensity-chart__title');
+    if (title) {
+      title.classList.toggle('visible', cfg.title);
+}
+  }
+
+  /*
+   * Target .step__card elements directly rather than the outer .step wrappers.
+   * Each .step is min-height:100vh, so its top edge crosses the trigger line
+   * long before the card itself is visually centred on screen.
+   * By targeting the card element, offset:0.5 fires when the card's own top
+   * edge reaches the viewport midpoint — a consistent visual position for
+   * every card regardless of its height.
+   * onStepEnter/Exit walk up to the parent .step via closest() to read the
+   * data-intensity-step attribute as before.
+   */
+  const intensityScroller = scrollama();
+  intensityScroller
+    .setup({
+      step:   '#intensitySteps .step__card',
+      offset: 0.5,
+      debug:  false,
+    })
+    .onStepEnter(({ element }) => {
+      const stepEl = element.closest('.step');
+      if (stepEl) applyIntensityStep(getStepIndex(stepEl));
+    })
+    .onStepExit(({ element, direction }) => {
+      if (direction === 'up') {
+        const stepEl = element.closest('.step');
+        if (stepEl) {
+          const idx = Math.max(0, getStepIndex(stepEl) - 1);
+          applyIntensityStep(idx);
+        }
+      }
+    });
+
+  // Keep Scrollama's internal offset correct after viewport resizes
+  window.addEventListener('resize', intensityScroller.resize);
+
+})();
+
+
+/* =============================================
+   11. LEARN MORE PANEL
    ============================================= */
 
 const learnMoreBtn     = document.getElementById('learnMoreBtn');
@@ -497,10 +644,12 @@ learnMoreBtn.addEventListener('click', () => {
   methodologyPanel.hidden = expanded;
 });
 
+
 /* =============================================
-   11. RESIZE — debounced + mobile helpers
+   12. RESIZE HANDLER + MOBILE HELPERS
    ============================================= */
 
+/* Debounced resize — re-inits stadium and resizes all scrollers */
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
@@ -515,21 +664,21 @@ window.addEventListener('resize', () => {
   }, 220);
 });
 
-/* Mobile breakpoint crossing — re-setup scrollers */
+/* Re-setup scrollers when crossing the mobile breakpoint */
 let _wasMobile = isMobile();
 window.addEventListener('resize', () => {
   const _isMobile = isMobile();
   if (_isMobile === _wasMobile) return;
   _wasMobile = _isMobile;
-  stadiumScroller.setup({ step: '#stadiumScrolly .step', offset: getStepOffset(), debug: false });
-  headlineScroller.setup({ step: '.headline-step', offset: _isMobile ? 0.65 : 0.55, debug: false });
+  stadiumScroller.setup({ step: '#stadiumScrolly .step',         offset: getStepOffset(),        debug: false });
+  headlineScroller.setup({ step: '.headline-step',               offset: _isMobile ? 0.65 : 0.55, debug: false });
   congestionScroller.setup({ step: '.congestion-scrolly .step', offset: _isMobile ? 0.65 : 0.55 });
 });
 
 /* ─────────────────────────────────────────────
-   MOBILE FIX: RESIZE OBSERVER
+   ResizeObserver guard
    Guarantees dots render even when #stadium's
-   bounding rect is 0 at parse time on mobile.
+   bounding rect is 0 at script parse time (mobile).
    ───────────────────────────────────────────── */
 (function setupStadiumResizeGuard() {
   if (!('ResizeObserver' in window)) return;
@@ -557,14 +706,20 @@ window.addEventListener('resize', () => {
 })();
 
 /* ─────────────────────────────────────────────
-   MOBILE: IFRAME TOUCH GUARD
+   Iframe touch guard
+   Prevents iframes capturing scroll events on
+   touch devices by toggling pointer-events.
    ───────────────────────────────────────────── */
 (function setupIframeTouchGuard() {
   const allIframes = document.querySelectorAll('.congestion-scrolly .chart-iframe');
+
   function applyPointerEvents() {
     if (!isMobile()) { allIframes.forEach(f => { f.style.pointerEvents = ''; }); return; }
-    allIframes.forEach(f => { f.style.pointerEvents = f.classList.contains('active') ? 'auto' : 'none'; });
+    allIframes.forEach(f => {
+      f.style.pointerEvents = f.classList.contains('active') ? 'auto' : 'none';
+    });
   }
+
   const observer = new MutationObserver(applyPointerEvents);
   allIframes.forEach(f => observer.observe(f, { attributes: true, attributeFilter: ['class'] }));
   window.addEventListener('resize', applyPointerEvents);
@@ -572,15 +727,22 @@ window.addEventListener('resize', () => {
 })();
 
 /* ─────────────────────────────────────────────
-   MOBILE: STEP CARD ENTRANCE ANIMATION
+   Step card entrance animation (mobile only)
+   Cards fade up into view as they enter the
+   viewport on touch devices.
    ───────────────────────────────────────────── */
 (function setupStepCardFade() {
   if (!('IntersectionObserver' in window)) return;
   const cards = document.querySelectorAll('.step__card');
+
   cards.forEach(card => {
     card.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
-    if (isMobile()) { card.style.opacity = '0'; card.style.transform = 'translateY(16px)'; }
+    if (isMobile()) {
+      card.style.opacity   = '0';
+      card.style.transform = 'translateY(16px)';
+    }
   });
+
   const io = new IntersectionObserver(entries => {
     if (!isMobile()) {
       entries.forEach(e => { e.target.style.opacity = ''; e.target.style.transform = ''; });
@@ -588,25 +750,32 @@ window.addEventListener('resize', () => {
     }
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.style.opacity = '1';
+        entry.target.style.opacity   = '1';
         entry.target.style.transform = 'translateY(0)';
         io.unobserve(entry.target);
       }
     });
   }, { threshold: 0.15 });
+
   cards.forEach(card => io.observe(card));
+
   window.addEventListener('resize', () => {
-    cards.forEach(card => { if (!isMobile()) { card.style.opacity = ''; card.style.transform = ''; } });
+    cards.forEach(card => {
+      if (!isMobile()) { card.style.opacity = ''; card.style.transform = ''; }
+    });
   });
 })();
 
 /* ─────────────────────────────────────────────
-   MOBILE: HERO SCROLL-HINT AUTO-HIDE
+   Hero scroll-hint auto-hide
+   Fades the mouse/scroll indicator out once the
+   user has started scrolling.
    ───────────────────────────────────────────── */
 (function setupScrollHintHide() {
   const hint = document.querySelector('.hero__scroll-hint');
   if (!hint) return;
   let hidden = false;
+
   function hideHint() {
     if (hidden || window.scrollY < 60) return;
     hidden = true;
@@ -615,5 +784,6 @@ window.addEventListener('resize', () => {
     hint.style.pointerEvents = 'none';
     window.removeEventListener('scroll', hideHint, { passive: true });
   }
+
   window.addEventListener('scroll', hideHint, { passive: true });
 })();
