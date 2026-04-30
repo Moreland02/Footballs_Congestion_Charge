@@ -296,6 +296,12 @@ body {
   transform: translateY(0) scale(1.8);
 }
 
+@media (max-width: 900px) {
+  .headline-card.active {
+    transform: translateY(0) scale(1);
+  }
+}
+
 .headline-card__inner {
   position: relative;
   text-align: center;
@@ -1580,9 +1586,23 @@ body {
 
   .scrolly--intensity .sticky-visual--intensity {
     width: 100%;
+    position: sticky;
+    top: 0;
     height: auto;
-    position: relative;
-    padding: 2rem 1.5rem 1rem;
+    /* Enough to show the bar chart but leave the bulk of the screen for step cards */
+    max-height: 58vh;
+    overflow: hidden;
+    padding: 1rem 1.25rem 0.5rem;
+    background: var(--color-bg);
+    z-index: 3;
+    justify-content: flex-start;
+    align-items: stretch;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  /* Hide the intro heading block — saves vertical space; heading is above the scrolly anyway */
+  .scrolly--intensity .sticky-visual--intensity .intensity-intro-block {
+    display: none;
   }
 
   .scrolly--intensity .steps--intensity {
@@ -1591,7 +1611,13 @@ body {
 
   .scrolly--intensity .steps--intensity .step {
     padding: 2rem 1.5rem;
-    min-height: 60vh;
+    min-height: 70vh;
+  }
+
+  /* Hide the animated stat callouts in each step card on mobile —
+     the bar chart already shows the numbers; these just crowd the layout */
+  .scrolly--intensity .intensity-highlight {
+    display: none;
   }
 }
 
