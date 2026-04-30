@@ -714,6 +714,8 @@ body {
 /* Intensity conclusion blends into the page — no coloured background */
 .factor-card--intensity-conclusion { background: var(--color-bg); }
 
+.factor-card--conclusion { background: #6fa158; }
+
 .factor-card__inner {
   /*
     Generous max-width and fluid gap so the right-column callout(s) sit
