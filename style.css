@@ -736,6 +736,10 @@ body {
   margin-bottom: 0.5rem;
 }
 
+#factor-card__number__02{
+  color: #fffbe8
+}
+
 .factor-card h3 {
   font-family: var(--font-display);
   font-size: clamp(1.6rem, 3vw, 2.2rem);
@@ -938,42 +942,103 @@ body {
 
 .intensity-bar-row__track {
   position: relative;
-  height: 36px;
   background: rgba(0,0,0,0.06);
   border-radius: 4px;
   overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  height: 12px;
+  flex: 1;
 }
 
+/* Legacy fill class — kept for reduced-motion rule in section 19 */
 .intensity-bar-row__fill {
-  position: absolute;
-  top: 0; left: 0;
   height: 100%;
   width: 0%;
-  border-radius: 4px;
   transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ── Two-part stacked bar segments ─────────────── */
+
+/*
+  Baseline segment (grey) — represents the 2015/16 season indexed at 100.
+  Its width is set by JS to BASE_WIDTH_PCT (65%) of the track.
+*/
+.baseline-segment {
+  height: 100%;
+  width: 0%;
+  background: #b0b0b0;
+  flex-shrink: 0;
+  border-radius: 4px 0 0 4px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/*
+  Increase segment (coloured) — represents the % increase.
+  Width is set by JS proportional to the increase value.
+  Appended right of baseline, no gap.
+*/
+.increase-segment {
+  height: 100%;
+  width: 0%;
+  flex-shrink: 0;
+  border-radius: 0 4px 4px 0;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s;
+}
+
 /* Colour per metric — ordered heat (sprint → minutes) */
-.intensity-bar-row__fill--sprints-dist  { background: #e05c3a; }
-.intensity-bar-row__fill--sprints-week  { background: #d4444e; }
-.intensity-bar-row__fill--hsr           { background: #c4398a; }
-.intensity-bar-row__fill--hid           { background: #9b35b5; }
-.intensity-bar-row__fill--minutes       { background: #5b57d6; }
+.intensity-bar-row__fill--sprints-dist,
+.increase-segment.intensity-bar-row__fill--sprints-dist  { background: #e05c3a; }
+.intensity-bar-row__fill--sprints-week,
+.increase-segment.intensity-bar-row__fill--sprints-week  { background: #d4444e; }
+.intensity-bar-row__fill--hsr,
+.increase-segment.intensity-bar-row__fill--hsr           { background: #c4398a; }
+.intensity-bar-row__fill--hid,
+.increase-segment.intensity-bar-row__fill--hid           { background: #9b35b5; }
+.intensity-bar-row__fill--minutes,
+.increase-segment.intensity-bar-row__fill--minutes       { background: #5b57d6; }
+
+/* Wrapper that holds the track + value label side-by-side */
+.intensity-bar-row__bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
 
 .intensity-bar-row__value {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
   font-family: 'DM Mono', monospace;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: #000000;
+  white-space: nowrap;
+  flex-shrink: 0;
   opacity: 0;
-  transition: opacity 0.4s ease 0.7s;
+  transition: opacity 0.4s ease 0.9s;
 }
 
 .intensity-bar-row.visible .intensity-bar-row__value { opacity: 1; }
+
+/* Baseline caption shown above the chart */
+.intensity-chart__baseline-caption {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: rgba(0,0,0,0.4);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.intensity-chart__baseline-caption::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 8px;
+  background: #b0b0b0;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
 
 /* Divider between sprint stats and match-minutes stat */
 .intensity-chart__divider {

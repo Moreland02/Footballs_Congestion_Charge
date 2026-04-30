@@ -26,7 +26,7 @@
     <section class="hero">
       <div class="hero__bg-rule"></div>
       <div class="hero__content">
-        <div class="hero__eyebrow">A Digital Investigation · 2026</div>
+        <div class="hero__eyebrow">May 2026</div>
         <h1 class="hero__headline">
           Football's Congestion Charge
         </h1>
@@ -166,8 +166,8 @@
       <div class="step" data-step="empty">
         <div class="step__card">
           <span class="step__label">The Stadium</span>
-          <p>This stadium is divided into <strong>five stands</strong>, representing each season from 2020/21 to 2024/25.
-            <br><br>Each seat represents <strong>100 days missed</strong> of a season through a soft-tissue injury in the top five European leagues.</p>
+          <p> This stadium is divided into <strong>five stands</strong>, representing each season from 2020/21 to 2024/25 in the top five European leagues. Each seat represents <strong>30 days</strong> missed through a soft-tissue injury.</p>
+            <br><br>Each seat represents <strong>100 days missed</strong> of a season through a soft-tissue injury  (injuries to the muscle, tendon, cartilage, or ligament) in the top five European leagues.</p>
         </div>
       </div>
 
@@ -280,7 +280,7 @@
         <div class="step__card">
           <span class="step__label">2024/25</span>
           <p>Last season, <strong>2024/25</strong>, saw the highest number of days lost to soft tissue injuries in five years.
-            <br><br>A total of <strong>14,663</strong> days were missed through injury.</p>
+            <br><br>A total of <strong>14,559</strong> days were missed through injury.</p>
           <ul class="injury-list">
             <li class="injury-text" data-type="muscle">
               <span class="injury-list__type">Muscle</span>
@@ -330,21 +330,21 @@
         <iframe id="chart1"
           class="chart-iframe"
           title="Total matches played across top 5 leagues"
-          src="https://datawrapper.dwcdn.net/7wKRP/1/"
+          src="https://datawrapper.dwcdn.net/7wKRP/4/" 
           scrolling="no"
           frameborder="0">
         </iframe>
         <iframe id="chart2"
           class="chart-iframe"
           title="Premier League fixture congestion over time"
-          src="https://datawrapper.dwcdn.net/3mbUe/1/"
+          src="https://datawrapper.dwcdn.net/3mbUe/5/"
           scrolling="no"
           frameborder="0">
         </iframe>
         <iframe id="chart3"
           class="chart-iframe"
           title="Why are injuries rising if fixtures are not?"
-          src="https://datawrapper.dwcdn.net/UvoqV/1/"
+          src="https://datawrapper.dwcdn.net/UvoqV/5/"
           scrolling="no"
           frameborder="0">
         </iframe>
@@ -359,7 +359,7 @@
       <div class="step" data-chart="1">
         <div class="step__card">
           <span class="step__label">Total Matches</span>
-          <p>The number of matches played across the top 5 European leagues <strong>isn't actually increasing</strong>.</p>
+          <p>The number of matches played across the top five European leagues <strong>isn't actually increasing</strong>.</p>
           <p>These figures include matches played across <strong>all</strong> competitions by these teams.</p>
         </div>
       </div>
@@ -367,7 +367,7 @@
         <div class="step__card">
           <span class="step__label">Fixture Congestion</span>
           <p>We also looked at the number of congested matches, specifically for Premier League teams, and found no increase in this either.
-            <br><br>The schedule, by raw count, <strong>hasn't</strong> actually become more congested on a club level.
+            <br><br>The schedule <strong>hasn't</strong> actually become more congested on a club level.
           </p>
         </div>
       </div>
@@ -416,48 +416,73 @@
         </div>
 
         <div class="intensity-chart" id="intensityChart">
-          <div class="intensity-chart__title">Increase between 2015/16 and 2024/25 seasons</div>
 
           <!-- Bar rows — hidden initially, revealed by scroll -->
-          <div class="intensity-bar-row" id="ibar-0">
+          <div class="intensity-bar-row" id="ibar-0"
+               aria-label="Sprinting distance: +40% increase from 2015/16 to 2024/25 season">
+          <div class="intensity-chart__title">Increase between 2015/16 and 2024/25 seasons</div>
+          <div class="intensity-chart__baseline-caption">Grey = 2015/16 baseline</div>
             <div class="intensity-bar-row__label">Sprinting distance</div>
-            <div class="intensity-bar-row__track">
-              <div class="intensity-bar-row__fill intensity-bar-row__fill--sprints-dist" data-target="40"></div>
+            <div class="intensity-bar-row__bar-wrap">
+              <div class="intensity-bar-row__track">
+                <div class="baseline-segment"></div>
+                <div class="increase-segment intensity-bar-row__fill--sprints-dist" data-increase="40"></div>
+              </div>
               <span class="intensity-bar-row__value">+40%</span>
             </div>
-          </div>
+            </div>
 
-          <div class="intensity-bar-row" id="ibar-1">
+
+          <div class="intensity-bar-row" id="ibar-1"
+               aria-label="Weekly sprints per player: +50% increase from 2015/16 to 2024/25 season">
             <div class="intensity-bar-row__label">Weekly sprints per player</div>
-            <div class="intensity-bar-row__track">
-              <div class="intensity-bar-row__fill intensity-bar-row__fill--sprints-week" data-target="50"></div>
+            <div class="intensity-bar-row__bar-wrap">
+              <div class="intensity-bar-row__track">
+                <div class="baseline-segment"></div>
+                <div class="increase-segment intensity-bar-row__fill--sprints-week" data-increase="50"></div>
+              </div>
               <span class="intensity-bar-row__value">+50%</span>
             </div>
-          </div>
+            </div>
 
-          <div class="intensity-bar-row" id="ibar-2">
+
+          <div class="intensity-bar-row" id="ibar-2"
+               aria-label="High-speed running: +23% increase from 2015/16 to 2024/25 season">
             <div class="intensity-bar-row__label">High-speed running</div>
-            <div class="intensity-bar-row__track">
-              <div class="intensity-bar-row__fill intensity-bar-row__fill--hsr" data-target="23"></div>
+            <div class="intensity-bar-row__bar-wrap">
+              <div class="intensity-bar-row__track">
+                <div class="baseline-segment"></div>
+                <div class="increase-segment intensity-bar-row__fill--hsr" data-increase="23"></div>
+              </div>
               <span class="intensity-bar-row__value">+23%</span>
             </div>
-          </div>
+            </div>
 
-          <div class="intensity-bar-row" id="ibar-3">
+
+          <div class="intensity-bar-row" id="ibar-3"
+               aria-label="High-intensity distance: +27% increase from 2015/16 to 2024/25 season">
             <div class="intensity-bar-row__label">High-intensity distance</div>
-            <div class="intensity-bar-row__track">
-              <div class="intensity-bar-row__fill intensity-bar-row__fill--hid" data-target="27"></div>
+            <div class="intensity-bar-row__bar-wrap">
+              <div class="intensity-bar-row__track">
+                <div class="baseline-segment"></div>
+                <div class="increase-segment intensity-bar-row__fill--hid" data-increase="27"></div>
+              </div>
               <span class="intensity-bar-row__value">+27%</span>
             </div>
-          </div>
+            </div>
+   
 
           <div class="intensity-chart__divider" id="intensityDivider"></div>
           <div class="intensity-chart__title" id="intensityDividerLabel">Increase since 2023/24 season</div>
 
-          <div class="intensity-bar-row" id="ibar-4">
+          <div class="intensity-bar-row" id="ibar-4"
+               aria-label="Actual minutes played per match: +13% increase from 2023/24 to 2024/25 season">
             <div class="intensity-bar-row__label">Actual minutes played per match</div>
-            <div class="intensity-bar-row__track">
-              <div class="intensity-bar-row__fill intensity-bar-row__fill--minutes" data-target="13"></div>
+            <div class="intensity-bar-row__bar-wrap">
+              <div class="intensity-bar-row__track">
+                <div class="baseline-segment"></div>
+                <div class="increase-segment intensity-bar-row__fill--minutes" data-increase="13"></div>
+              </div>
               <span class="intensity-bar-row__value">+13%</span>
             </div>
           </div>
@@ -536,7 +561,7 @@
               <span class="intensity-highlight__number">+13%</span>
               <span class="intensity-highlight__label">increase in actual minutes played per match</span>
             </div>
-            <p><br>New stoppage-time rules introduced mean matches are lasting around 5 minutes longer on average.</p>
+            <p><br>New stoppage-time rules introduced mean matches are lasting around five minutes longer on average.</p>
           </div>
         </div>
 
@@ -606,7 +631,7 @@
     <div class="factor-card factor-card--travel">
       <div class="factor-card__inner">
         <div class="factor-card__text">
-          <span class="factor-card__number">02</span>
+          <span class="factor-card__number" id="factor-card__number__02">02</span>
           <h3>Travel</h3>
           <p>Playing for elite teams requires significant international travel. This year's World Cup spans three countries and four main time zones. According to the BBC, the sixteen host cities are up to 2,800 miles apart. For players, this means more distance travelled and time spent travelling between matches.<br><br>
             Jonathan Hughes, a sport scientist from Cardiff Metropolitan University, says this travel may lead to increased injuries.<br>
@@ -637,9 +662,9 @@
           <h3>Media Scrutiny</h3>
           <p>Psychological stressors are known to increase injury rates in elite athletes, including professional footballers. But research is just beginning to explore a new kind of psychological stressor: social media scrutiny.<br><br>
             Footballers have long been the subject of intense media attention, but the rise of social media has caused this to skyrocket. In a 2023 review, Assistant Professor Ranjith Kamal of India's Government College of Physical Education suggested that "Players exposed to high volume negative social media commentary show 32-45% greater anxiety symptoms following matches", a stressor which may, in turn, increase injury susceptibility.<br><br>
-            With increased media attention comes increased scrutiny and hate. Last season, charity Kick It Out reported 621 online instances of discrimination, and according to the Observer, instances of football-related online abuse more than doubled between 2023-24 and 2024-25 seasons.<br><br>
-            The problem is so prevalent that the Premier League have developed a specialist unit tasked with finding the sources of online abuse. Since 2020, the league have investigated over 3000 cases of online abuse and discrimination. In February of this year, this resulted in police investigations into the online racial abuse of four Premier League players: Wolverhampton's Tolu Arokodare, Sunderland's Romaine Mundle, Chelsea's Wesley Fofana and Burnley's Hannibal Meibri.<br>
-            SOMEONE from SOMEWHERE thinks these instances of online abuse might impact injury rates: "QUOTE".
+            With increased media attention comes increased scrutiny and hate. Last season, charity Kick It Out reported 621 online instances of discrimination, and according to the Observer, football-related online abuse more than doubled between the 2023-24 and 2024-25 seasons.<br><br>
+            The problem is so prevalent that the Premier League have developed a specialist unit tasked with finding the sources of online abuse. Since 2020, the league have investigated over 3,000 cases of online abuse and discrimination. In February of this year, this resulted in police investigations into the online racial abuse of four Premier League players: Wolverhampton's Tolu Arokodare, Sunderland's Romaine Mundle, Chelsea's Wesley Fofana and Burnley's Hannibal Mejbri.<br>
+            Millie Beaton from the charity United Against Online Abuse says such online abuse can impact the health of professional athletes: "Through research and engagement with sportspeople, including that conducted by the FIA, our United Against Online Abuse coalition and our scholars, we know that online abuse can have a significant physical and mental toll".
           </p>
         </div>
         <div class="factor-card__callout">

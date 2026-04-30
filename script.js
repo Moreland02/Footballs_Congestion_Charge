@@ -347,12 +347,29 @@ function revealSeasonsUpTo(upToIndex, opts = {}) {
 
     if (!isHidden) {
       const fillMap = mapSeasonToDots(SEASONS[si], seats);
+
       renderSeats(seats, fillMap, {
-        staggerDelay: alreadyRevealed ? 0        : (opts.staggerDelay ?? 0.45),
-        duration:     alreadyRevealed ? 0        : (opts.duration     ?? 460),
+        staggerDelay: alreadyRevealed ? 0 : (opts.staggerDelay ?? 0.45),
+        duration:     alreadyRevealed ? 0 : (opts.duration ?? 460),
       });
+
+      // ✅ Grey out previous stand ONLY when a new one appears
+      if (si === upToIndex - 1 && upToIndex > 0) {
+        d3.selectAll(`circle.seat-dot[data-stand="${si}"]`)
+          .transition()
+          .duration(400)
+          .style('opacity', 0.4); // ← 40% grey
+      } else if (si === upToIndex) {
+        // Current stand stays fully visible
+        d3.selectAll(`circle.seat-dot[data-stand="${si}"]`)
+          .style('opacity', 1);
+      }
+
       labelsLayer.select(`.stand-label-g[data-stand="${si}"]`)
-        .transition().duration(alreadyRevealed ? 0 : 300).delay(80).style('opacity', 1);
+        .transition()
+        .duration(alreadyRevealed ? 0 : 300)
+        .delay(80)
+        .style('opacity', 1);
     } else {
       const emptyMap = new Map();
       seats.forEach(s => emptyMap.set(s.id, { fill: SEAT_EMPTY_FILL, active: false }));
@@ -559,21 +576,37 @@ congestionScroller
       if (shouldShow && !row.classList.contains('visible')) {
         row.classList.add('visible');
 
-        // Animate the fill bar width proportionally within a 8–92% display range
-        const fill = row.querySelector('.intensity-bar-row__fill');
-        if (fill) {
-          const target  = parseFloat(fill.dataset.target);
-          const minStat = 0,  maxStat = 55;
-          const minBar  = 8,  maxBar  = 92;
-          const pct = minBar + ((target - minStat) / (maxStat - minStat)) * (maxBar - minBar);
+        // Two-part stacked bar: baseline (grey) then increase (coloured).
+        // The track is split: baseline occupies BASE_PCT of total width;
+        // the remaining (100 - BASE_PCT)% is shared proportionally by the
+        // increase segment, scaled against MAX_INCREASE (the largest % in the chart).
+        const BASE_PCT    = 65;   // % of track width reserved for the baseline index
+        const MAX_INCREASE = 50;  // largest increase value in the dataset (weekly sprints)
+
+        const baseline = row.querySelector('.baseline-segment');
+        const increase = row.querySelector('.increase-segment');
+
+        if (baseline && increase) {
+          const pct = parseFloat(increase.dataset.increase);
+
+          // Stage 1: baseline grows to BASE_PCT of the track
           requestAnimationFrame(() => {
-            fill.style.width = pct + '%';
+            baseline.style.width = BASE_PCT + '%';
           });
+
+          // Stage 2: increase segment grows proportionally within remaining track width
+          const increaseWidth = ((pct / MAX_INCREASE) * (100 - BASE_PCT)).toFixed(2);
+          setTimeout(() => {
+            increase.style.width = increaseWidth + '%';
+          }, 400);
         }
       } else if (!shouldShow) {
         row.classList.remove('visible');
-        const fill = row.querySelector('.intensity-bar-row__fill');
-        if (fill) fill.style.width = '0%';
+        const baseline = row.querySelector('.baseline-segment');
+        const increase = row.querySelector('.increase-segment');
+
+        if (baseline) baseline.style.width = '0%';
+        if (increase) increase.style.width = '0%';
       }
     }
 
@@ -670,9 +703,9 @@ window.addEventListener('resize', () => {
   const _isMobile = isMobile();
   if (_isMobile === _wasMobile) return;
   _wasMobile = _isMobile;
-  stadiumScroller.setup({ step: '#stadiumScrolly .step',         offset: getStepOffset(),        debug: false });
-  headlineScroller.setup({ step: '.headline-step',               offset: _isMobile ? 0.65 : 0.55, debug: false });
-  congestionScroller.setup({ step: '.congestion-scrolly .step', offset: _isMobile ? 0.65 : 0.55 });
+  stadiumScroller.offset(getStepOffset());
+  headlineScroller.offset(_isMobile ? 0.65 : 0.55);
+  congestionScroller.offset(_isMobile ? 0.65 : 0.55);
 });
 
 /* ─────────────────────────────────────────────
@@ -726,45 +759,6 @@ window.addEventListener('resize', () => {
   applyPointerEvents();
 })();
 
-/* ─────────────────────────────────────────────
-   Step card entrance animation (mobile only)
-   Cards fade up into view as they enter the
-   viewport on touch devices.
-   ───────────────────────────────────────────── */
-(function setupStepCardFade() {
-  if (!('IntersectionObserver' in window)) return;
-  const cards = document.querySelectorAll('.step__card');
-
-  cards.forEach(card => {
-    card.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
-    if (isMobile()) {
-      card.style.opacity   = '0';
-      card.style.transform = 'translateY(16px)';
-    }
-  });
-
-  const io = new IntersectionObserver(entries => {
-    if (!isMobile()) {
-      entries.forEach(e => { e.target.style.opacity = ''; e.target.style.transform = ''; });
-      return;
-    }
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity   = '1';
-        entry.target.style.transform = 'translateY(0)';
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-
-  cards.forEach(card => io.observe(card));
-
-  window.addEventListener('resize', () => {
-    cards.forEach(card => {
-      if (!isMobile()) { card.style.opacity = ''; card.style.transform = ''; }
-    });
-  });
-})();
 
 /* ─────────────────────────────────────────────
    Hero scroll-hint auto-hide
